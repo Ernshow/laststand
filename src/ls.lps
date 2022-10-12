@@ -1,0 +1,598 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <ProjectSession>
+    <PathDelim Value="\"/>
+    <Version Value="11"/>
+    <BuildModes Active="Default"/>
+    <Units Count="52">
+      <Unit0>
+        <Filename Value="ls.lpr"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="24"/>
+        <CursorPos X="6" Y="31"/>
+        <UsageCount Value="21"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit0>
+      <Unit1>
+        <Filename Value="azss.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="AZSS"/>
+        <EditorIndex Value="49"/>
+        <UsageCount Value="21"/>
+        <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit1>
+      <Unit2>
+        <Filename Value="ballistic.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="Ballistic"/>
+        <EditorIndex Value="48"/>
+        <UsageCount Value="21"/>
+        <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit2>
+      <Unit3>
+        <Filename Value="baseflag.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="BaseFlag"/>
+        <EditorIndex Value="47"/>
+        <UsageCount Value="21"/>
+        <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit3>
+      <Unit4>
+        <Filename Value="baseweapons.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="BaseWeapons"/>
+        <EditorIndex Value="46"/>
+        <UsageCount Value="21"/>
+        <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit4>
+      <Unit5>
+        <Filename Value="benchmark.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="Benchmark"/>
+        <EditorIndex Value="45"/>
+        <UsageCount Value="21"/>
+        <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit5>
+      <Unit6>
+        <Filename Value="bigtext.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="BigText"/>
+        <EditorIndex Value="43"/>
+        <UsageCount Value="21"/>
+        <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit6>
+      <Unit7>
+        <Filename Value="bosses.pas"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="42"/>
+        <UsageCount Value="21"/>
+        <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit7>
+      <Unit8>
+        <Filename Value="botwizard.pas"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="41"/>
+        <UsageCount Value="21"/>
+        <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit8>
+      <Unit9>
+        <Filename Value="charges.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="Charges"/>
+        <EditorIndex Value="40"/>
+        <UsageCount Value="21"/>
+        <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit9>
+      <Unit10>
+        <Filename Value="clusterbombs.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="ClusterBombs"/>
+        <EditorIndex Value="39"/>
+        <UsageCount Value="21"/>
+        <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit10>
+      <Unit11>
+        <Filename Value="configs.pas"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="38"/>
+        <UsageCount Value="21"/>
+        <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit11>
+      <Unit12>
+        <Filename Value="constants.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="Constants"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="37"/>
+        <TopLine Value="65"/>
+        <CursorPos X="23" Y="81"/>
+        <UsageCount Value="21"/>
+        <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit12>
+      <Unit13>
+        <Filename Value="damage.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="Damage"/>
+        <EditorIndex Value="36"/>
+        <UsageCount Value="21"/>
+        <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit13>
+      <Unit14>
+        <Filename Value="debug.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="Debug"/>
+        <EditorIndex Value="35"/>
+        <CursorPos X="35" Y="10"/>
+        <UsageCount Value="21"/>
+        <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit14>
+      <Unit15>
+        <Filename Value="dummy.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="Dummy"/>
+        <UsageCount Value="21"/>
+      </Unit15>
+      <Unit16>
+        <Filename Value="earthquake.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="EarthQuake"/>
+        <EditorIndex Value="34"/>
+        <UsageCount Value="21"/>
+        <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit16>
+      <Unit17>
+        <Filename Value="exceptionhandler.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="ExceptionHandler"/>
+        <EditorIndex Value="33"/>
+        <UsageCount Value="21"/>
+        <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit17>
+      <Unit18>
+        <Filename Value="fire.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="Fire"/>
+        <EditorIndex Value="32"/>
+        <UsageCount Value="21"/>
+        <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit18>
+      <Unit19>
+        <Filename Value="flashmsg.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="FlashMSG"/>
+        <EditorIndex Value="31"/>
+        <UsageCount Value="21"/>
+        <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit19>
+      <Unit20>
+        <Filename Value="globals.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="Globals"/>
+        <EditorIndex Value="30"/>
+        <UsageCount Value="21"/>
+        <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit20>
+      <Unit21>
+        <Filename Value="hax.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="Hax"/>
+        <EditorIndex Value="29"/>
+        <UsageCount Value="21"/>
+        <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit21>
+      <Unit22>
+        <Filename Value="ini.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="INI"/>
+        <EditorIndex Value="28"/>
+        <UsageCount Value="21"/>
+        <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit22>
+      <Unit23>
+        <Filename Value="kits.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="Kits"/>
+        <EditorIndex Value="27"/>
+        <UsageCount Value="21"/>
+        <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit23>
+      <Unit24>
+        <Filename Value="main.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="Main"/>
+        <TopLine Value="475"/>
+        <CursorPos X="25" Y="493"/>
+        <UsageCount Value="21"/>
+        <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit24>
+      <Unit25>
+        <Filename Value="mapslist.pas"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="26"/>
+        <UsageCount Value="21"/>
+        <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit25>
+      <Unit26>
+        <Filename Value="maprecords.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="MapRecords"/>
+        <EditorIndex Value="25"/>
+        <UsageCount Value="21"/>
+        <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit26>
+      <Unit27>
+        <Filename Value="mapvotes.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="MapVotes"/>
+        <EditorIndex Value="24"/>
+        <UsageCount Value="21"/>
+        <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit27>
+      <Unit28>
+        <Filename Value="maths.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="Maths"/>
+        <EditorIndex Value="23"/>
+        <UsageCount Value="21"/>
+        <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit28>
+      <Unit29>
+        <Filename Value="mersennetwister.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="MersenneTwister"/>
+        <EditorIndex Value="22"/>
+        <UsageCount Value="21"/>
+        <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit29>
+      <Unit30>
+        <Filename Value="landmines.pas"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="21"/>
+        <UsageCount Value="21"/>
+        <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit30>
+      <Unit31>
+        <Filename Value="misc.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="Misc"/>
+        <EditorIndex Value="20"/>
+        <UsageCount Value="21"/>
+        <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit31>
+      <Unit32>
+        <Filename Value="gamemodes.pas"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="19"/>
+        <TopLine Value="201"/>
+        <CursorPos X="7" Y="70"/>
+        <UsageCount Value="21"/>
+        <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit32>
+      <Unit33>
+        <Filename Value="objects.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="Objects"/>
+        <EditorIndex Value="18"/>
+        <UsageCount Value="21"/>
+        <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit33>
+      <Unit34>
+        <Filename Value="placeplayer.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="PlacePlayer"/>
+        <EditorIndex Value="17"/>
+        <UsageCount Value="21"/>
+        <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit34>
+      <Unit35>
+        <Filename Value="lsplayers.pas"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="16"/>
+        <UsageCount Value="21"/>
+        <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit35>
+      <Unit36>
+        <Filename Value="raycasts.pas"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="15"/>
+        <UsageCount Value="21"/>
+        <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit36>
+      <Unit37>
+        <Filename Value="scarecrows.pas"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="14"/>
+        <UsageCount Value="21"/>
+        <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit37>
+      <Unit38>
+        <Filename Value="scriptcore.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="Scriptcore"/>
+        <EditorIndex Value="44"/>
+        <UsageCount Value="21"/>
+        <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit38>
+      <Unit39>
+        <Filename Value="sentrygun.pas"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="13"/>
+        <UsageCount Value="21"/>
+        <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit39>
+      <Unit40>
+        <Filename Value="spawner.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="Spawner"/>
+        <EditorIndex Value="12"/>
+        <UsageCount Value="21"/>
+        <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit40>
+      <Unit41>
+        <Filename Value="stacks.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="Stacks"/>
+        <EditorIndex Value="11"/>
+        <UsageCount Value="21"/>
+        <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit41>
+      <Unit42>
+        <Filename Value="statguns.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="Statguns"/>
+        <EditorIndex Value="10"/>
+        <UsageCount Value="21"/>
+        <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit42>
+      <Unit43>
+        <Filename Value="strikes.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="Strikes"/>
+        <EditorIndex Value="9"/>
+        <UsageCount Value="21"/>
+        <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit43>
+      <Unit44>
+        <Filename Value="tasks.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="Tasks"/>
+        <EditorIndex Value="8"/>
+        <UsageCount Value="21"/>
+        <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit44>
+      <Unit45>
+        <Filename Value="utils.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="Utils"/>
+        <EditorIndex Value="5"/>
+        <UsageCount Value="21"/>
+        <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit45>
+      <Unit46>
+        <Filename Value="weaponmenu.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="WeaponMenu"/>
+        <EditorIndex Value="4"/>
+        <UsageCount Value="21"/>
+        <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit46>
+      <Unit47>
+        <Filename Value="weapons.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="Weapons"/>
+        <EditorIndex Value="3"/>
+        <UsageCount Value="21"/>
+        <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit47>
+      <Unit48>
+        <Filename Value="barbedwires.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="BarbedWires"/>
+        <EditorIndex Value="2"/>
+        <UsageCount Value="21"/>
+        <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit48>
+      <Unit49>
+        <Filename Value="zombies.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="Zombies"/>
+        <EditorIndex Value="1"/>
+        <UsageCount Value="21"/>
+        <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit49>
+      <Unit50>
+        <Filename Value="taskpolice.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="TaskPolice"/>
+        <EditorIndex Value="6"/>
+        <UsageCount Value="21"/>
+        <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit50>
+      <Unit51>
+        <Filename Value="taskmedic.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="TaskMedic"/>
+        <EditorIndex Value="7"/>
+        <UsageCount Value="21"/>
+        <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit51>
+    </Units>
+    <JumpHistory Count="30" HistoryIndex="29">
+      <Position1>
+        <Filename Value="main.pas"/>
+        <Caret Line="67" Column="5" TopLine="41"/>
+      </Position1>
+      <Position2>
+        <Filename Value="main.pas"/>
+        <Caret Line="68" Column="5" TopLine="41"/>
+      </Position2>
+      <Position3>
+        <Filename Value="main.pas"/>
+        <Caret Line="69" Column="5" TopLine="41"/>
+      </Position3>
+      <Position4>
+        <Filename Value="main.pas"/>
+        <Caret Line="70" Column="5" TopLine="41"/>
+      </Position4>
+      <Position5>
+        <Filename Value="main.pas"/>
+        <Caret Line="71" Column="5" TopLine="41"/>
+      </Position5>
+      <Position6>
+        <Filename Value="main.pas"/>
+        <Caret Line="72" Column="5" TopLine="41"/>
+      </Position6>
+      <Position7>
+        <Filename Value="main.pas"/>
+        <Caret Line="73" Column="5" TopLine="41"/>
+      </Position7>
+      <Position8>
+        <Filename Value="main.pas"/>
+        <Caret Line="74" Column="5" TopLine="42"/>
+      </Position8>
+      <Position9>
+        <Filename Value="main.pas"/>
+        <Caret Line="75" Column="5" TopLine="43"/>
+      </Position9>
+      <Position10>
+        <Filename Value="main.pas"/>
+        <Caret Line="76" Column="5" TopLine="44"/>
+      </Position10>
+      <Position11>
+        <Filename Value="main.pas"/>
+        <Caret Line="77" Column="5" TopLine="45"/>
+      </Position11>
+      <Position12>
+        <Filename Value="main.pas"/>
+        <Caret Line="78" Column="5" TopLine="46"/>
+      </Position12>
+      <Position13>
+        <Filename Value="main.pas"/>
+        <Caret Line="79" Column="5" TopLine="47"/>
+      </Position13>
+      <Position14>
+        <Filename Value="main.pas"/>
+        <Caret Line="80" Column="5" TopLine="48"/>
+      </Position14>
+      <Position15>
+        <Filename Value="main.pas"/>
+        <Caret Line="81" Column="5" TopLine="49"/>
+      </Position15>
+      <Position16>
+        <Filename Value="main.pas"/>
+        <Caret Line="82" Column="5" TopLine="50"/>
+      </Position16>
+      <Position17>
+        <Filename Value="main.pas"/>
+        <Caret Line="83" Column="5" TopLine="51"/>
+      </Position17>
+      <Position18>
+        <Filename Value="main.pas"/>
+        <Caret Line="84" Column="5" TopLine="52"/>
+      </Position18>
+      <Position19>
+        <Filename Value="main.pas"/>
+        <Caret Line="85" Column="5" TopLine="53"/>
+      </Position19>
+      <Position20>
+        <Filename Value="main.pas"/>
+        <Caret Line="86" Column="5" TopLine="54"/>
+      </Position20>
+      <Position21>
+        <Filename Value="main.pas"/>
+        <Caret Line="87" Column="5" TopLine="55"/>
+      </Position21>
+      <Position22>
+        <Filename Value="main.pas"/>
+        <Caret Line="88" Column="5" TopLine="56"/>
+      </Position22>
+      <Position23>
+        <Filename Value="main.pas"/>
+        <Caret Line="89" Column="5" TopLine="57"/>
+      </Position23>
+      <Position24>
+        <Filename Value="main.pas"/>
+        <Caret Line="149" Column="17" TopLine="127"/>
+      </Position24>
+      <Position25>
+        <Filename Value="main.pas"/>
+        <Caret Line="167" Column="17" TopLine="141"/>
+      </Position25>
+      <Position26>
+        <Filename Value="main.pas"/>
+        <Caret Line="493" Column="26" TopLine="481"/>
+      </Position26>
+      <Position27>
+        <Filename Value="main.pas"/>
+        <Caret Line="495" Column="13" TopLine="481"/>
+      </Position27>
+      <Position28>
+        <Filename Value="debug.pas"/>
+        <Caret Line="23" Column="21"/>
+      </Position28>
+      <Position29>
+        <Filename Value="debug.pas"/>
+        <Caret Line="21" Column="18"/>
+      </Position29>
+      <Position30>
+        <Filename Value="debug.pas"/>
+        <Caret Line="11" Column="11"/>
+      </Position30>
+    </JumpHistory>
+    <RunParams>
+      <FormatVersion Value="2"/>
+      <Modes Count="0" ActiveMode="default"/>
+    </RunParams>
+  </ProjectSession>
+</CONFIG>
