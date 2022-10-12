@@ -6,14 +6,14 @@ unit gamemodes;
 interface
 
 uses
-	{$ifdef FPC}
-		Scriptcore,
+  {$ifdef FPC}
+  Scriptcore,
   {$endif}
   Bigtext,
-	Globals,
-	LSPlayers,
+  Globals,
+  LSPlayers,
   Constants,
-	Configs,
+  Configs,
   Debug,
   MersenneTwister,
   Misc,
@@ -21,11 +21,11 @@ uses
   Weapons;
 
 const
-	Z_W_HPINC =     17; // zombie wave health percent increase
+	Z_W_HPINC = 17; // zombie wave health percent increase
 	Z_W_HPINIT = 295.0;
-	Z_W_DMGINC =    30; // zombie wave damage percent increase
+	Z_W_DMGINC = 30; // zombie wave damage percent increase
 	
-	V_Z_W_HPINC =     22; // zombie wave health percent increase
+	V_Z_W_HPINC = 22; // zombie wave health percent increase
 	V_Z_W_HPINIT = 295;
 
 type

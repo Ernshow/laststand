@@ -1,0 +1,9 @@
+
+*.log
+*.exe
+*.psb
+*.psd
+*.o
+*.ppu
+src/lib/*
+src/ls.exe

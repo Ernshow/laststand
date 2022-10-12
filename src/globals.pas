@@ -14,42 +14,32 @@ uses
    Scriptcore;
 {$endif}
 
-	
-type
-	
-	tTimer = record
-		Value: longint;
-		Cycle: integer;
-	end;
-	
-var
-	HackermanMode,
-	PerformProgressCheck,
-	ServerSetTeam,
-	StartGame,
-	PerformStartMatch,
-	MapchangeStart,
-	GameRunning: boolean;
-	
-	ZombiesInGame: byte;
-	NumberOfWave,
-	Civilians: word;
-	
-	CurrentMap2: string;
-	
-	Timer: tTimer;
-	SurvPwnMeter, AvgSurvPwnMeter: single;
-	
-	MAXHEALTH,
-	ZombiesKilled,
-	ZombieHpInc,
-	ZombieDmgInc,
-	ZombieHpInit: integer;
-	
-	switchMapTime, switchMapMap: integer;
-	PlayerLeft: boolean;
 
-  ZombieFightTime: longint;
+type
+
+    tTimer = record
+        Value: longint;
+        Cycle: integer;
+    end;
+
+var
+    HackermanMode, PerformProgressCheck, ServerSetTeam, StartGame,
+    PerformStartMatch, MapchangeStart, GameRunning: boolean;
+
+    ZombiesInGame: byte;
+    NumberOfWave, Civilians: word;
+
+    CurrentMap2: string;
+
+    Timer: tTimer;
+    SurvPwnMeter, AvgSurvPwnMeter: single;
+
+    MAXHEALTH, ZombiesKilled, ZombieHpInc, ZombieDmgInc, ZombieHpInit: integer;
+
+    switchMapTime, switchMapMap: integer;
+    PlayerLeft: boolean;
+
+    ZombieFightTime: longint;
 
 implementation
 

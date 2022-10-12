@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<CONFIG>
-  <Compiler Value="C:\lazarus\fpc\3.0.4\bin\x86_64-win64\fpc.exe" Date="1351329191"/>
-  <Params Value=" -MDelphi -Sghi -g -gl -l -vewnhibq -vm5057,5036,5024 &quot;-FiD:\01 Gry\Soldat\mods\Last-Stand-master\src\lib\x86_64-win64&quot; &quot;-FuD:\01 Gry\Soldat\mods\Last-Stand-master\src\&quot; &quot;-FUD:\01 Gry\Soldat\mods\Last-Stand-master\src\lib\x86_64-win64\&quot; &quot;-FED:\01 Gry\Soldat\mods\Last-Stand-master\src\&quot; &quot;-oD:\01 Gry\Soldat\mods\Last-Stand-master\src\ls.exe&quot; ls.lpr"/>
-</CONFIG>
