@@ -3,9 +3,7 @@ unit BigText;
 interface
 
 uses
-{$ifdef FPC}
 	Scriptcore,
-{$endif}
 	Misc;
 
 const
@@ -17,24 +15,24 @@ procedure BigText_DrawMapX(Layer: byte; ID: byte; Text: string; Duration: intege
 procedure BigText_DrawScreen(ID: byte; Text: string; Duration: integer; Colour: longint; Scale: single; X, Y: integer);
 procedure BigText_DrawScreenX(Layer: byte; ID: byte; Text: string; Duration: integer; Colour: longint; Scale: single; X, Y: integer);
 procedure BigText_Init(ReservedMTNum, ReservedSTNum: byte);
-	
+
 implementation
-	
+
 type
 	tText = record
 		EndTime: LongInt;
 	end;
-	
+
 	tTextPlayer = record
 		ScreenText: array[0..BIGTEXT_ST_NUM] of tText;
 		MapText: array[0..BIGTEXT_MT_NUM] of tText;
 	end;
-	
+
 var
 	MT_First: byte;
 	ST_First: byte;
 	TextPlayer: array [1..32] of tTextPlayer;
-	
+
 procedure BigText_Init(ReservedMTNum, ReservedSTNum: byte);
 begin
 	MT_First := ReservedMTNum;

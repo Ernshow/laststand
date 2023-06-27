@@ -4,7 +4,7 @@ interface
 
 const
 	PX_PER_METER = 14.0;	// Number of soldat distance units per one "meter"
-	
+
 	ANG_PI   = 3.14159265;
 	DEG_2_RAD = ANG_PI / 180;
 	ANGLE_5 = DEG_2_RAD * 5;
@@ -23,7 +23,7 @@ const
 
 function ShortenAngle(x: single): single;
 
-//function arctan2(X, Y: single): single; external 'arctan2@SCE.dll cdecl'; 
+//function arctan2(X, Y: single): single; external 'arctan2@SCE.dll cdecl';
 
 //function arccos(X: single): single; external 'arccos@SCE.dll cdecl';
 
@@ -44,7 +44,7 @@ function IsBetween(a, b, c: integer): boolean;
 function absi(x: smallint): smallint;
 
 function sgn(x: single): shortint;
-	
+
 implementation
 
 function sqr(x: single): single;

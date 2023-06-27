@@ -9,9 +9,7 @@ unit BarbedWires;
 interface
 
 uses
-{$ifdef FPC}
 	Scriptcore,
-{$endif}
   BigText,
 	Debug,
 	Constants,

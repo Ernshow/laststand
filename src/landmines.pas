@@ -2,16 +2,14 @@
 //  |     Mines     |
 //  * ------------- *
 
-// This is a part of {LS} Last Stand. 
+// This is a part of {LS} Last Stand.
 
 unit landmines;
 
 interface
 
 uses
-{$ifdef FPC}
 	Scriptcore,
-{$endif}
 	Constants,
 	Damage,
 	Globals,
@@ -20,10 +18,10 @@ uses
 	maths,
 	MersenneTwister,
 	Raycasts;
-	
+
 const
 	MAX_MINES = 	 20;
-	
+
 type
 	tMineSyst = record
 		PS, SR, MaxAngle, RMax, RMin: single;
@@ -37,7 +35,7 @@ type
 
 var
 	Mines: tMineSyst;
-	
+
 function Mines_Place(ID: byte): boolean;
 
 procedure Mines_TryPlace(ID: byte);
@@ -117,7 +115,7 @@ begin
 							begin
 								GetPlayerXY(j, x, y);
 								v2x:=Mines.Mine[i].X-x;
-								if Abs(v2x) <= Mines.RMax*2 then 
+								if Abs(v2x) <= Mines.RMax*2 then
 								begin
 									v2y:=Mines.Mine[i].Y-2-y;
 									if Abs(v2y) <= Mines.RMax*2 then

@@ -9,9 +9,7 @@ unit Tasks;
 interface
 
 uses
-	{$ifdef FPC}
-		Scriptcore,
-  {$endif}
+	Scriptcore,
   Constants,
 	lsplayers,
   WeaponMenu,
@@ -20,7 +18,7 @@ uses
 
 const
 	MAX_TASKS =		7;
-	
+
 function TaskToName(task: byte; zomb: boolean): string;
 
 function TaskToShortName(task: byte; zomb: boolean): string;
@@ -30,7 +28,7 @@ procedure TaskInfo(ID: byte);
 function SwitchTask(ID: byte; task: shortint): boolean;
 
 function TaskStrToInt(s: string): byte;
-	
+
 implementation
 
 function TaskToName(task: byte; zomb: boolean): string;
@@ -45,6 +43,7 @@ begin
 			31: Result := 'Butcher part';
 			4: Result := 'Burning zombie';
 			5: Result := 'Perished Priest';
+			51: Result := 'Priest minion';
 			6: Result := 'Firefighter';
 			7: Result := 'Satan I';
 			8: Result := 'Satan II';
@@ -80,6 +79,7 @@ begin
 			31: Result := 'Part';
 			4: Result := 'Burn';
 			5: Result := 'PP';
+			51: Result := 'PM';
 			6: Result := 'FF';
 			7: Result := 'S1';
 			8: Result := 'S2';
@@ -106,7 +106,7 @@ end;
 procedure TaskInfo(ID: byte);
 begin
 	if player[ID].Zombie then begin
-		Case player[ID].task of			
+		Case player[ID].task of
 			0: begin
 				WriteConsole(ID, 'You are now a zombie', $FF6666);
 			end;
@@ -122,7 +122,7 @@ begin
 				WriteConsole(ID, 'HOLD the [Grenade] key to jump', $99CC33 );
 			end;
 			3: begin
-				WriteConsole(ID, 'You are now the Undead Butcher', B_RED);
+				WriteConsole(ID, 'You are now the Undead Butcher. HOLD the [Grenade] key to split into parts when below 25% hp', B_RED);
 			end;
 			31: begin
 				WriteConsole(ID, 'You are now a little Butcher part', B_RED);
@@ -132,6 +132,10 @@ begin
 			end;
 			5: begin
 				WriteConsole(ID, 'You are now the Perished Priest. HOLD the [Grenade] key to attack a near enemy', $A070E0);
+			end;
+			51: begin
+				WriteConsole(ID, 'You are now a Priest minion', $8E44AD );
+				WriteConsole(ID, 'HOLD the [Grenade] key to teleport to nearby enemy', $8E44AD );
 			end;
 			6: begin
 				WriteConsole(ID, 'You''re now the Undead Firefighter! Hold the key or type the command:', ORANGE);
@@ -173,41 +177,41 @@ begin
 			end;
 		end;
 	end else
-		Case player[ID].task of			
+		Case player[ID].task of
 			1: begin
 				WriteConsole(ID, 'You are now the Mechanic', WHITE );
-				WriteConsole(ID, 'Type /mre   (default Alt+1) to eat your meal ready to eat',   INFORMATION );	
+				WriteConsole(ID, 'Type /mre   (default Alt+1) to eat your meal ready to eat',   INFORMATION );
 				WriteConsole(ID, 'Type /wire  (default Alt+2) to place a barbed wire', INFORMATION );
-				WriteConsole(ID, 'Type /build (default Alt+3) to build a statgun, /get (Alt+4) to pick one up', INFORMATION );						
-				WriteConsole(ID, 'Type /sentry to place a sentry gun, /get to pick one up', INFORMATION );						
+				WriteConsole(ID, 'Type /build (default Alt+3) to build a statgun, /get (Alt+4) to pick one up', INFORMATION );
+				WriteConsole(ID, 'Type /sentry to place a sentry gun, /get to pick one up', INFORMATION );
 			end;
 			2: begin
 				WriteConsole(ID, 'You are now the Demolition Expert', WHITE );
 				WriteConsole(ID, 'Type /mine (default Alt+1) to place a landmine if you have one', INFORMATION );
-				WriteConsole(ID, 'Type /place <time> to place a timed charge', INFORMATION );	
-				WriteConsole(ID, 'Type /rch  (default Alt+2)to place a remote charge', INFORMATION );		
+				WriteConsole(ID, 'Type /place <time> to place a timed charge', INFORMATION );
+				WriteConsole(ID, 'Type /rch  (default Alt+2)to place a remote charge', INFORMATION );
 			end;
 			3: begin
-				WriteConsole(ID, 'You are now the Doctor',                         WHITE );				
+				WriteConsole(ID, 'You are now the Doctor',                         WHITE );
 				WriteConsole(ID, 'You can heal and revive dead players by switching weapons', INFORMATION );
 				WriteConsole(ID, 'You autoheal if you do not move          ', INFORMATION );
 			end;
 			4: begin
 				WriteConsole(ID, 'You are now a Farmer',                 WHITE );
-				WriteConsole(ID, 'You have the highest resistance in your team',   INFORMATION );	;	
+				WriteConsole(ID, 'You have the highest resistance in your team',   INFORMATION );	;
 				WriteConsole(ID, 'Type /mre   (default Alt+1) to eat your meal ready to eat', INFORMATION );
 				WriteConsole(ID, 'Type /scare (default Alt+3) to place a scarecrow (a decoy for zombies)', INFORMATION);
 			end;
 			5: begin
 				WriteConsole(ID, 'You are now the Sharpshooter',                WHITE );
 				WriteConsole(ID, 'You can throw Molotov cocktails (knifes)', INFORMATION );
-				WriteConsole(ID, 'Type /mre (default Alt+1) to eat your meal ready to eat',   INFORMATION );	
+				WriteConsole(ID, 'Type /mre (default Alt+1) to eat your meal ready to eat',   INFORMATION );
 			end;
 			6: begin
 				WriteConsole(ID, 'You are now the Police Officer',                        WHITE );
 				WriteConsole(ID, 'You are the leader of the group. Your task is to order supplies',INFORMATION );
 				WriteConsole(ID, 'Type /supply for a list of supplies you can order', INFORMATION );
-				WriteConsole(ID, 'Type /mre to eat your meal ready to eat',      INFORMATION );	
+				WriteConsole(ID, 'Type /mre to eat your meal ready to eat',      INFORMATION );
 			end;
 			7: begin
 				WriteConsole(ID, 'You are now the Priest',                        WHITE );
@@ -222,12 +226,12 @@ function SwitchTask(ID: byte; task: shortint): boolean;
 var
 	i: byte;
 	Res: tResistance;
-begin  
+begin
 	player[ID].task := task;
 	for i := 1 to 15 do
 		player[ID].Activeweapons[i] := false;
-		
-	Case task of	
+
+	Case task of
 		1: begin // mechanic
 			player[ID].mre := 1;
 			player[ID].Wires := 3;
@@ -241,7 +245,7 @@ begin
 		end;
 		2: begin // demo
 			player[ID].Mines := 14;
-			player[ID].charges := 8;				
+			player[ID].charges := 8;
 			player[ID].Activeweapons[1] := true;
 			player[ID].Activeweapons[7] := true;
 			player[ID].Activeweapons[11] := true;
@@ -254,7 +258,7 @@ begin
 			Medic.ID := ID;
 			player[ID].Activeweapons[2] := true;
 			player[ID].Activeweapons[3] := true;
-			player[ID].Activeweapons[4] := true;			
+			player[ID].Activeweapons[4] := true;
 			player[ID].Activeweapons[11] := true;
 			player[ID].Activeweapons[14] := true;
 			player[ID].DamageFactor := 1.1;

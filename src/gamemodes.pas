@@ -1,19 +1,17 @@
 //  * ------------- *
 //  |  Mode System  |
 //  * ------------- *
-unit gamemodes;
+unit Gamemodes;
 
 interface
 
 uses
-  {$ifdef FPC}
-  Scriptcore,
-  {$endif}
+	Scriptcore,
   Bigtext,
-  Globals,
-  LSPlayers,
+	Globals,
+	LSPlayers,
   Constants,
-  Configs,
+	Configs,
   Debug,
   MersenneTwister,
   Misc,
@@ -21,11 +19,11 @@ uses
   Weapons;
 
 const
-	Z_W_HPINC = 17; // zombie wave health percent increase
+	Z_W_HPINC =     17; // zombie wave health percent increase
 	Z_W_HPINIT = 295.0;
-	Z_W_DMGINC = 30; // zombie wave damage percent increase
-	
-	V_Z_W_HPINC = 22; // zombie wave health percent increase
+	Z_W_DMGINC =    30; // zombie wave damage percent increase
+
+	V_Z_W_HPINC =     22; // zombie wave health percent increase
 	V_Z_W_HPINIT = 295;
 
 type
@@ -37,7 +35,7 @@ type
 		ScoreExponent, SPTimeFactor: single;
 		Difficulty: word;
 	end;
-	
+
 	tModes = record
 		DifficultyPercent: word;
 		SpecialWaveDelay: byte;
@@ -45,7 +43,7 @@ type
 		RealCurrentMode: byte;
 		CurrentMode: byte;
 	end;
-	
+
 var
 	Mode: array [1..MAX_MODES] of tGameMode;
 	Modes: tModes;
@@ -57,7 +55,7 @@ procedure Modes_ResetVotes();
 
 procedure Modes_Set(RealMode: byte; Verbose: boolean);
 
-procedure Modes_CheckVotes();
+function Modes_CheckVotes(): Boolean;
 
 procedure Modes_OnVote(ID, modeID: byte);
 
@@ -87,7 +85,7 @@ begin
 	for i:=1 to MaxID do begin
 		player[i].ModeReady:=false;
 		player[i].VotedMode:=0;
-	end;	
+	end;
 end;
 
 procedure Modes_ApplyConfig();
@@ -110,7 +108,7 @@ begin
 	Modes.DifficultyPercent := Round(Mode[RealMode].Difficulty*DIFFICULTYPERCENT/100);
 	Modes.RealCurrentMode := RealMode;
 	Modes.CurrentMode := Mode[RealMode].ModeType;
-	Modes.ScoreExponent := Mode[RealMode].ScoreExponent;	
+	Modes.ScoreExponent := Mode[RealMode].ScoreExponent;
 	Modes.SpecialWaveDelay := Mode[RealMode].SpecialWaveDelay;
 	BaseWeapons_Init(Mode[Modes.RealCurrentMode].WeaponSys);
 	Weapons_Init(Mode[Modes.RealCurrentMode].WeaponPath);
@@ -118,7 +116,7 @@ begin
 	Command('/minrespawntime ' + IntToStr(Mode[Modes.RealCurrentMode].MinRespawnTime));
 	Command('/respawntime ' + IntToStr(Mode[Modes.RealCurrentMode].RespawnTime));
 	Command('/maxrespawntime ' + IntToStr(Mode[Modes.RealCurrentMode].MaxRespawnTime));
-	
+
 	ZombieDmgInc := Z_W_DMGINC;
 	ZombieHpInc := Z_W_HPINC;
 
@@ -128,7 +126,7 @@ begin
 		ZombieHpInc := V_Z_W_HPINC;
 		ZombieHpInit := V_Z_W_HPINIT;
 	end;
-	
+
 	if Verbose then begin
 		WriteDebug(5, 'Switching to '+Mode[RealMode].Name+ ' mode');
 		WriteConsole(0, 'Server mode changed to ' + IntToStr(RealMode) + ': ' + Mode[RealMode].Name, Mode[Modes.RealCurrentMode].Color); //+' (difficulty: '+IntToStr(Modes.DifficultyPercent)+'%)'
@@ -140,9 +138,15 @@ begin
 	end;
 end;
 
-procedure Modes_CheckVotes();
-var a, h, i, k, ready: byte; m: smallint; b: boolean; occ, n: array[0..MAX_MODES] of byte; str: string;
+function Modes_CheckVotes(): Boolean;
+var
+	a, h, i, k, ready: byte;
+	m: smallint;
+	b: boolean;
+	occ, n: array[0..MAX_MODES] of byte;
+	str: string;
 begin
+	Result := false;
 	for i := 1 to MaxID do begin
 		if player[i].ModeReady then begin
 			if player[i].VotedMode > 0 then begin
@@ -166,7 +170,13 @@ begin
 	if not b then exit;
 	// ...then set a new mode
 	for i := 1 to MAX_MODES do begin
-		if n[i] > 0 then str := str + Mode[i].Name + ': ' + IntToStr(n[i]) + '/' + IntToStr(m) + ' = ' + IntToStr(100 * n[i] div m) + '%' + #13#10;
+		if n[i] > 0 then
+			str := str
+				+ Mode[i].Name
+				+ ': ' + IntToStr(n[i])
+				+ '/' + IntToStr(m)
+				+ ' = ' + IntToStr(100 * n[i] div m)
+				+ '%' + #13#10;
 		if n[i] > h then begin
 			h := n[i];
 			k := 1;
@@ -185,18 +195,19 @@ begin
 	startMode := false;
 	Modes_Set(a, true);
 	Modes_ResetVotes();
+	Result := true;
 end;
 
 procedure Modes_OnUnvote(ID: byte);
 begin
 	if GameRunning then begin
-		WriteConsole(ID, 'You can''t vote during a round. Please wait.', INFORMATION); 
+		WriteConsole(ID, 'You can''t vote during a round. Please wait.', INFORMATION);
 		exit;
 	end;
 	// if the vote got started
-	if startMode then 
-		if player[ID].ModeReady then 
-		begin						
+	if startMode then
+		if player[ID].ModeReady then
+		begin
 			player[ID].VotedMode := 0;
 			player[ID].ModeReady := false;
 			WriteConsole(0, Players[ID].Name + ' removed his vote for changing gamemode', MODEVOTE);
@@ -218,11 +229,11 @@ procedure Modes_OnVote(ID, modeID: byte);
 var str: string;
 begin
 	if (GameRunning) then begin
-		WriteConsole(ID, 'You can''t vote during a round. Please wait until the game ends', INFORMATION); 
+		WriteConsole(ID, 'You can''t vote during a round. Please wait until the game ends', INFORMATION);
 		exit;
 	end;
 	if Config.ForceMode then begin
-		WriteConsole(ID, 'Can''t change the game mode, feature disabled on this server', INFORMATION); 
+		WriteConsole(ID, 'Can''t change the game mode, feature disabled on this server', INFORMATION);
 		exit;
 	end;
 	// check if the vote option exists
@@ -232,13 +243,13 @@ begin
 				// if the vote got started
 				if startMode then begin
 					// if the vote got started
-					if not player[ID].ModeReady then begin						
+					if not player[ID].ModeReady then begin
 						player[ID].VotedMode := modeID;
 						player[ID].ModeReady := true;
 						str := Players[ID].Name + ' has voted for the ' + Mode[modeID].Name + ' mode [' + IntToStr(Modes_VotedPlayersNum()) + '/' + IntToStr(Players_HumanNum) + ']';
 						WriteDebug(5, str);
 						WriteConsole(0, str, MODEVOTE);
-					end else  begin	
+					end else  begin
 						WriteConsole(ID, 'Your vote has already been counted, type /unmode to cancel your vote', INFORMATION );
 						exit;
 					end;
@@ -247,7 +258,7 @@ begin
 					player[ID].VotedMode := modeID;
 					player[ID].ModeReady := true;
 					WriteConsole(0, Players[ID].Name + ' voted to change mode to ' + Mode[modeID].Name+ ' [' + IntToStr(Modes_VotedPlayersNum()) + '/' + IntToStr(Players_HumanNum) + ']', MODEVOTE);
-					WriteConsole(0, 'Use /modehelp for more information', MODEVOTE ); 
+					WriteConsole(0, 'Use /modehelp for more information', MODEVOTE );
 				end;
 				// if all players voted, get all votes and calculate the new difficulty
 				checkModeVote:=true;
@@ -302,7 +313,7 @@ initialization
 	Mode[2].RespawnTime := 0;
 	Mode[2].MaxRespawnTime := 1;
 	Mode[2].MinRespawnTime := 0;
-	
+
 	Mode[3].Maxplayers := MAXPLAYERS_VERSUS;
 	Mode[3].Name := 'Versus';
 	Mode[3].SpecialWaveDelay := 1;
@@ -325,7 +336,7 @@ initialization
 	Mode[3].RespawnTime := 5;
 	Mode[3].MaxRespawnTime := 6;
 	Mode[3].MinRespawnTime := 2;
-	
+
 	Mode[4].Maxplayers := MAXPLAYERS_INFECTION;
 	Mode[4].Name := 'Infection';
 	Mode[4].SpecialWaveDelay := 1;
@@ -348,7 +359,7 @@ initialization
 	Mode[4].RespawnTime := 5;
 	Mode[4].MaxRespawnTime := 6;
 	Mode[4].MinRespawnTime := 2;
-	
+
 	Mode[5].Maxplayers := MAXPLAYERS_BUTCHERY;
 	Mode[5].Name := 'Butchery';
 	Mode[5].SpecialWaveDelay := 0;

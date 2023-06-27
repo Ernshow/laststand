@@ -9,9 +9,7 @@ unit Kits;
 interface
 
 uses
-{$ifdef FPC}
 	Scriptcore,
-{$endif}
 	Misc;
 
 const
@@ -24,11 +22,11 @@ type
 		active: boolean;
 		x, y: single;
 	end;
-	
+
 var
 	MaxKitID: integer;
 	kit:         array[1..MAX_KITS] of tKit;
-	
+
 function Kits_Spawn(x, y: single; style: byte; duration: word): boolean;
 
 procedure Kits_Kill(ID: byte);
@@ -80,7 +78,7 @@ procedure Kits_Process();
 var
 	i: integer;
 begin
-	if MaxKitID > 0 then	
+	if MaxKitID > 0 then
 		for i := 1 to MaxKitID do
 			if kit[i].Active then
 				if kit[i].duration > 0 then begin

@@ -7,9 +7,7 @@ unit FlashMSG;
 interface
 
 uses
-{$ifdef FPC}
 	Scriptcore,
-{$endif}
 	Bigtext,
 	Constants,
 	Globals;
@@ -21,14 +19,14 @@ type
 		Text: string;
 		Count: byte;
 	end;
-	
+
 var
 	FMSG: tFlashMsg;
-	
+
 procedure FMSG_Draw(Text: string; Time: byte; Color, Color2: longint);
 
 procedure FMSG_Process();
-	
+
 implementation
 
 procedure FMSG_Draw(Text: string; Time: byte; Color, Color2: longint);

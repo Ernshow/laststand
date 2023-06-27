@@ -9,9 +9,7 @@ unit scarecrows;
 interface
 
 uses
-{$ifdef FPC}
 	Scriptcore,
-{$endif}
 	Botwizard,
 	Constants,
 	Damage,
@@ -30,10 +28,10 @@ type
 		hp, LastHP, LureNum: integer;
 
 	end;
-	
+
 var
 	Scarecrow: tScarecrow;
-	
+
 procedure Scarecrow_TryPlace(ID: byte);
 
 procedure Scarecrow_TryDetonate();
@@ -47,7 +45,7 @@ procedure Scarecrow_Clear();
 procedure Scarecrow_Kaboom();
 
 implementation
-	
+
 var
 	DetonateScarecrow: boolean;
 
@@ -63,34 +61,34 @@ begin
   sY[1] := sY[0];
   for i := 0 to 1 do begin
   	x2 := x - (2*i - 1) * 10;
-  	b := (b) or (RayCast2(0, 2, 30, x2, sY[i]));
+		b := (b) or (RayCast2(0, 2, 30, x2, sY[i]));
   end;
   if not b then begin
-  	if Abs(sY[0] - sY[1]) <= 13 then begin
-  		NewPlayer := BW_CreateScarecrow(HackermanMode);
-  		try
-  			scarecrow.ID := PutBot(NewPlayer, x, sY[0] + 5, 3).ID;
-  		finally
-  			NewPlayer.Free;
-  		end;
-  		if scarecrow.ID > MaxID then MaxID := scarecrow.ID;
-  		scarecrow.owner := ID;
-  		scarecrow.hp := SCARECROW_HITPOINTS;
-  		scarecrow.LastHP := 0;
-  		DetonateScarecrow := false;
-  		player[ID].Scarecrows := player[ ID ].Scarecrows - 1;
-  		Weapons_Force(scarecrow.ID, WTYPE_NOWEAPON, WTYPE_NOWEAPON, 0, 0);
-  		WriteDebug(3, 'scarecrow placed');
-  		WriteConsole( 0, 'Farmer ' + Players[ID].Name + ' has placed a scarecrow', GREEN);
-  		WriteConsole(ID, 'Type /act (default Alt+4) to detonate the scarerow', GREEN);
-  		WriteConsole(ID, IntToStr(player[ID].Scarecrows) + ' scarecrows left', GREEN);
-      Result := true;
-  	end else
-    	if errors then
-    		WriteConsole(ID, 'You cannot build the scarecrow here, ground is too steep',RED);
-  end else begin
-  	if errors then
-    	WriteConsole(ID, 'You cannot build the scarecrow on an edge', RED);
+		if Abs(sY[0] - sY[1]) <= 13 then begin
+			NewPlayer := BW_CreateScarecrow(HackermanMode);
+			try
+				scarecrow.ID := PutBot(NewPlayer, x, sY[0] + 5, 3).ID;
+			finally
+				NewPlayer.Free;
+			end;
+			if scarecrow.ID > MaxID then MaxID := scarecrow.ID;
+			scarecrow.owner := ID;
+			scarecrow.hp := SCARECROW_HITPOINTS;
+			scarecrow.LastHP := 0;
+			DetonateScarecrow := false;
+			player[ID].Scarecrows := player[ ID ].Scarecrows - 1;
+			Weapons_Force(scarecrow.ID, WTYPE_NOWEAPON, WTYPE_NOWEAPON, 0, 0);
+			WriteDebug(3, 'scarecrow placed');
+			WriteConsole( 0, 'Farmer ' + Players[ID].Name + ' has placed a scarecrow', GREEN);
+			WriteConsole(ID, 'Type /act (default Alt+4) to detonate the scarerow', GREEN);
+			WriteConsole(ID, IntToStr(player[ID].Scarecrows) + ' scarecrows left', GREEN);
+			Result := true;
+		end else
+			if errors then
+				WriteConsole(ID, 'You cannot build the scarecrow here, ground is too steep',RED);
+	end else begin
+		if errors then
+			WriteConsole(ID, 'You cannot build the scarecrow on an edge', RED);
   end;
 end;
 
@@ -104,7 +102,7 @@ begin
 					if (player[ ID ].Scarecrows > 0) then begin
 						if scarecrow.ID = 0 then begin
               for i := 1 to 5 do begin
-              	if Scarecrow_TryPlaceX(ID, i, false) then exit;
+								if Scarecrow_TryPlaceX(ID, i, false) then exit;
                 if Scarecrow_TryPlaceX(ID, -i, false) then exit;
               end;
               Scarecrow_TryPlaceX(ID, 0.1, true);
@@ -113,7 +111,7 @@ begin
 				end else WriteConsole(ID, 'You are not the farmer ', RED);
 			end else WriteConsole(ID, 'You have to be on the ground to place a scarecrow', RED);
 		end else WriteConsole(ID, 'You have to be alive to place a scarecrow', RED);
-	end else WriteConsole(ID, 'You are not the farmer', RED);	
+	end else WriteConsole(ID, 'You are not the farmer', RED);
 end;
 
 procedure Scarecrow_NailBomb(X, Y, v: single; n, style, owner: integer);
@@ -137,7 +135,7 @@ var i: integer;
 begin
   for i := 1 to MaxID do begin
     if player[i].LuredByScarecrow then begin
-       Scarecrow_UnlureZombie(i);
+      Scarecrow_UnlureZombie(i);
     end;
   end;
 end;
@@ -218,10 +216,10 @@ begin
         dx := X2 - X;
 				r := Math.Abs(dx);
 				if r < 100.0 then begin
-        	dy := Y2 - Y;
+					dy := Y2 - Y;
           if Math.Abs(dy) < 50.0 then begin
             if RayCast(X, Y, X2, Y2, true, false, false) then begin
-					    if not player[i].Boss then begin
+							if not player[i].Boss then begin
                 scarecrow.LureNum := scarecrow.LureNum + 1;
                 if player[i].Task <> 0 then
                   scarecrow.LureNum := scarecrow.LureNum + 2;
@@ -230,8 +228,8 @@ begin
                 if player[i].LuredByScarecrow = false then begin
                   player[i].LuredByScarecrow := true;
                   players[i].Dummy := true;
-             	    Players[i].KeyUp := false;
-            	    Players[i].KeyJetpack := false;
+									Players[i].KeyUp := false;
+									Players[i].KeyJetpack := false;
                   Players[i].KeyShoot := true;
                 end;
 
@@ -245,10 +243,10 @@ begin
                   end;
                 end;
 
-						    players[i].MouseAimX := Trunc(X);
-						    players[i].MouseAimY := Trunc(Y);
+								players[i].MouseAimX := Trunc(X);
+								players[i].MouseAimY := Trunc(Y);
                 if RandFlt_()-0.2 > r/20.0 then begin
-                	Players[i].KeyLeft := false;
+									Players[i].KeyLeft := false;
                   Players[i].KeyRight := false;
                 end else begin
                   if Players[i].X > X then begin
@@ -257,13 +255,13 @@ begin
                   end else begin
                     Players[i].KeyLeft := false;
                     Players[i].KeyRight := true;
-          	      end;
+									end;
                 end;
                 if not dmg then
-						    if r < 20.0 then begin
-							    Scarecrow_OnDamage(1 + lured div 6);
-							    dmg := true;
-						    end;
+								if r < 20.0 then begin
+									Scarecrow_OnDamage(1 + lured div 6);
+									dmg := true;
+								end;
 
                 // If zombie is getting away from the scare and is being shot
                 // distract it from the scarecrow
@@ -271,19 +269,16 @@ begin
                 if player[i].HurtTime + 2 >= Timer.Value then begin
                   player[i].ScarecrowLureImmunity := RandInt(2, 15);
                 end
-					    end;
-            end else begin
-            	if player[i].LuredByScarecrow then
-              	Scarecrow_UnlureZombie(i);
-            end;
-          end else begin
-          	if player[i].LuredByScarecrow then
-            	Scarecrow_UnlureZombie(i);
-          end;
-        end else begin
+							end;
+            end else
+							if player[i].LuredByScarecrow then
+								Scarecrow_UnlureZombie(i);
+          end else
+						if player[i].LuredByScarecrow then
+							Scarecrow_UnlureZombie(i);
+        end else
           if player[i].LuredByScarecrow then
             Scarecrow_UnlureZombie(i);
-        end;
       end else begin
         player[i].ScarecrowLureImmunity := player[i].ScarecrowLureImmunity - 1;
         if player[i].LuredByScarecrow then

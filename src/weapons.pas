@@ -8,10 +8,9 @@ unit Weapons;
 
 interface
 
-{$ifdef FPC}
-uses Scriptcore,
-  	 INI;
-{$endif}
+uses
+	Scriptcore,
+  INI;
 
 function ShortWeapName(x: byte): string;
 
@@ -43,14 +42,13 @@ var
 
 procedure Weapons_Init(weaponFile: string);
 var ini: tINI;
-  	i: byte;
+	i: byte;
 	foundKey: boolean;
 begin
-  	INI_LOAD(ini, weaponFile + '.ini');
-  	for i := 0 to WEAPON_NUM do
-    begin
-  		WeaponConfig[i].Ammo := strtoint(INI_Get(ini, WeaponConfigName(i), 'Ammo', '0', foundKey));
-    end;
+	INI_LOAD(ini, weaponFile + '.ini');
+	for i := 0 to WEAPON_NUM do begin
+		WeaponConfig[i].Ammo := strtoint(INI_Get(ini, WeaponConfigName(i), 'Ammo', '0', foundKey));
+	end;
 end;
 
 function ShortWeapName(x: byte): string;
@@ -110,7 +108,7 @@ begin
 		WTYPE_FLAMER: Result := 'Flamer';
 		WTYPE_BOW: Result := 'Rambo Bow';
 		WTYPE_BOW2: Result := 'Flamed Arrows';
-    	WTYPE_NOWEAPON: Result := 'Punch';
+		WTYPE_NOWEAPON: Result := 'Punch';
 	end;
 end;
 
@@ -134,11 +132,8 @@ begin
 end;
 
 function WeapStrToInt(s: string): byte;
-{$ifndef FPC}
 var s2: string; int: integer;
-{$endif}
 begin
-  {$ifndef FPC}
 	s := LowerCase(s);
 	s2 := Copy(s, 1, 2);
 	case s2 of
@@ -172,11 +167,7 @@ begin
 				Result := int;
 		end;
 	end;
-  {$else}
-    Result := 0;
-  {$endif}
 end;
 
 begin
-
 end.

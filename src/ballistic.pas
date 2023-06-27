@@ -6,16 +6,14 @@ unit Ballistic;
 
 interface
 
-{$ifdef FPC}
-	uses Scriptcore;
-{$endif}
+uses Scriptcore;
 
 const
   DEFAULTGRAVITY = 0.06;
 	G_BUL = -0.135; //gravity acceleration for a bullet [pixels/tick^2]
 	K_AIR = 0.01; // air resistance factor
 	G_PL = -DEFAULTGRAVITY;
-	
+
 	ik_ = 1.0 - K_AIR;
 
 type
@@ -23,13 +21,13 @@ type
 		x, y, vx, vy: single;
 		t: word;
 	end;
-	
+
 // returns time in ticks of a bullet's flight
 // sx - x axis distance beetween start and destination
 // vx - x axis velocity of a bullet
 function BallisticTime(sx, vx: double): double;
 //	external 'BallisticTime@ballistic.dll';
-	
+
 function BallisticAim(x1, y1, x2, y2, v: double; var target_in_range: boolean): double;
 
 function BallisticAimX(x, y, v: double; target: tActivePlayer; var target_in_range: boolean): double;
@@ -49,7 +47,7 @@ const
 	BA_GAMMA = 1.0;
 	BAX_GAMMA = 1.0;
 	BA_S_EPSILON = BA_EPSILON*BA_EPSILON;
-	
+
 
 // Simple 2x2 matrix for the Newton algo.
 type Matrix2 = record
@@ -78,11 +76,11 @@ begin
 	Result.m12 := -m.m12 * idet;
 	Result.m21 := -m.m21 * idet;
 	Result.m22 := m.m11 * idet;
-end;  
+end;
 
 //function BallisticAim_DLL(x1, y1, x2, y2, v, gravity_factor: double; var time: double): double;
 //	external 'BallisticAim@ballistic.dll';
-	
+
 //function BallisticAimX_DLL(
 //	a, t,
 //	xb0, yb0,
@@ -91,7 +89,7 @@ end;
 //	var target_in_range: boolean
 //): double;
 //	external 'BallisticAimX@ballistic.dll';
-	
+
 // Ballstic functions
 
 // returns time in ticks of a bullet's flight
@@ -240,7 +238,7 @@ begin
 		//Players.WriteConsole(FormatFloat('0.0', t) + '   ' + InttoStr(BA_ITERATIONS-n), $FFFF00);
 		Result := a;
 	end;
-end; 
+end;
 
 //function _bax_solve2(
 //	a, t,
@@ -302,7 +300,7 @@ var
 	ground: boolean;
 begin
 	gravity := Game.Gravity / 0.06;
-	
+
 	// Calculate aiming point
 	px := target.X;
 	py := target.Y - 10;
@@ -310,11 +308,11 @@ begin
 		py := target.Y - 6;
 	if target.IsProne then
 		py := target.Y - 3;
-	
+
 	// Get players velocity
 	vx := target.VelX;
 	vy := target.VelY;
-	
+
 	// Estimate players acceleration
 	ground := Map.RayCast(px, py, px-10, py+50, true, false, false, false, 0);
 	ground := ground or Map.RayCast(px, py, px+10, py+50, true, false, false, false, 0);
@@ -328,14 +326,14 @@ begin
 		ax := -0.01;
 	if target.KeyRight then
 		ax := ax + 0.01;
-		
+
 	// Aim
 	a0 := _ba_solve(x, y, px, py, v, gravity, t0);
 	if not ((t0 >= 0) or (t0 < 0)) then begin // if NaN
 		t0 := 120;
 		//Players.WriteConsole('BA failed: ' + IntToStr(Round(a0/pi*180)), $FFFFFF);
 	end;
-	
+
 	// Aim
 	Result := _bax_solve(
 		a0, t0,
@@ -345,7 +343,7 @@ begin
 		v, gravity,
 		target_in_range
 	);
-	
+
 	if not target_in_range then begin
 		//Players.WriteConsole('BAX failed: ' + IntToStr(Round(Result/pi*180)), $FFFFFF);
 		Result := a0;

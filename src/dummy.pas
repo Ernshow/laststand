@@ -9,9 +9,7 @@ unit Dummy;
 interface
 
 uses
-{$ifdef FPC}
 	Scriptcore,
-{$endif}
 	Ballistic,
 	BaseFlag,
   maths,

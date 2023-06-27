@@ -9,9 +9,7 @@ unit BaseFlag;
 interface
 
 uses
-{$ifdef FPC}
 	Scriptcore,
-{$endif}
 	Constants,
 	Globals;
 

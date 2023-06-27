@@ -4,9 +4,7 @@ unit Misc;
 interface
 
 uses
-  {$ifdef FPC}
-    Scriptcore,
-  {$endif}
+  Scriptcore,
 	Debug,
 	MersenneTwister;
 
@@ -15,7 +13,7 @@ const MAXLINT = $FFFFFFFF;
 var
 	MaxID: byte;
 	TmpPath: string;
-	
+
 type
 	tArrPointer = record
 		val: longint;
@@ -75,7 +73,7 @@ procedure Shoot(x, y, Angle, add_vx, add_vy, vmin, vmax, Spread, Accuracy, Damag
 procedure CreateBulletX(X,Y,VelX,VelY,HitM: Single; sStyle, Owner: Byte);
 
 implementation
-  
+
 const
 	Hex_Charset = '0123456789ABCDEF';
 	FNV_PRIME_32 = 16777619;
@@ -100,7 +98,7 @@ end;
 
 // thanks to CurryWurst for this one
 procedure QuickSort(var Field: array of tArrPointer; Left, Right: integer);
-var    
+var
   l, r, Pivot: integer; Buffer: tArrPointer;
 begin
   // Chek whether there is at least more than one element to sort
@@ -111,7 +109,7 @@ begin
     // Pick the Pivot element
     Pivot:= Field[(Left + Right) shr 1].val;
     // Presort
-    repeat 
+    repeat
       // Search an element which is smaller than the piviot
       while (Field[l].val < Pivot) do
         l := l + 1;
@@ -132,7 +130,7 @@ begin
       QuickSort(Field, Left, r);
     if (Right > l) then
       QuickSort(Field, l, Right);
-  end else 
+  end else
     exit;
 end;
 
@@ -169,7 +167,7 @@ end;
 function Objects_Spawn(X, Y: single; style: byte): byte;
 var temp: TNewMapObject;
 begin
-  temp := TNewMapObject.Create; 
+  temp := TNewMapObject.Create;
   temp.X := X;
   temp.Y := Y;
   temp.Style := style;
@@ -238,10 +236,11 @@ end;
 
 procedure CreateBulletX(X,Y,VelX,VelY,HitM: Single; sStyle, Owner: Byte);
 begin
-WriteDebug(10, 'Owner' + IntToStr(Owner));
+	// WriteDebug(10, 'Owner' + IntToStr(Owner));
 	if Players[Owner].Active then begin
 		CreateBullet(X, Y, VelX, VelY, HitM, sStyle, Owner);
-	end else WriteDebug(10, 'bID: ' + IntToStr(owner));
+	end else
+		WriteDebug(10, 'bID: ' + IntToStr(owner));
 end;
 
 procedure Shoot(x, y, Angle, add_vx, add_vy, vmin, vmax, Spread, Accuracy, Damage: single; Style, ID, n: byte);

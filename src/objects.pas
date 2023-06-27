@@ -9,9 +9,7 @@ unit Objects;
 interface
 
 uses
-{$ifdef FPC}
 	Scriptcore,
-  {$endif}
 	MersenneTwister,
 	Raycasts,
 	Misc,
@@ -40,7 +38,7 @@ begin
 	Result := true;
 	for i := 1 to n do begin
 		if n > 0 then begin
-			 x2 := x + RandFlt(n+2*i-4, 4-n+2*i);
+			x2 := x + RandFlt(n+2*i-4, 4-n+2*i);
 		end else x2 := x;
 		if style = 16 then Result := Kits_Spawn(x2, y-3*i, 16, 240) else
 		if style = 17 then Result := Kits_Spawn(x2, y-3*i, 17, 240) else

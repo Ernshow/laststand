@@ -3,9 +3,7 @@ unit Benchmark;
 interface
 
 uses
-{$ifdef FPC}
 	Scriptcore,
-{$endif}
 	Bigtext,
   Misc;
 
@@ -93,7 +91,7 @@ begin
 					TickStatistics[i].AvgCounter := TickStatistics[i].AvgCounter + 1;
 					TickStatistics[i].AvgSum := TickStatistics[i].AvgSum + ticks;
 				end;
-		
+
 				if dbg_aoi_time then
 				if (TickStatistics[i].EventName	= 'AppOnIdle') then begin
 					T := T*0.99 + 0.01*ticks;
@@ -105,7 +103,7 @@ begin
 					if Game.TickCount mod 6 = 0 then
 						BigText_DrawScreenX(111, 0, 'AOI: avg: ' + FormatFloat('0.0', T) + #13#10 +
 													'     max: ' + FormatFloat('0.0', T2) + #13#10  +
-													'     [ms]', 70, $FFFFFF, 0.05, 600, 300);	
+													'     [ms]', 70, $FFFFFF, 0.05, 600, 300);
 				end;
 				break;
 			end

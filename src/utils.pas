@@ -9,9 +9,7 @@ unit Utils;
 interface
 
 uses
-{$ifdef FPC}
 	Scriptcore,
-{$endif}
 	LSPlayers,
 	Misc,
 	maths,
@@ -73,7 +71,7 @@ begin
 	for i:=1 to MaxID do
 		if i <> ID then
 		if Players[i].Alive then
-		if player[i].Zombie <> Team then 
+		if player[i].Zombie <> Team then
 		if not player[i].JustResp then begin
 			GetPlayerXY(i,X2,Y2);
 			Vx:=X2-X; Vy:=Y2-Y;
@@ -81,7 +79,7 @@ begin
 			if DistSqr < MaxDistance then begin
 				if DistSqr >= MinDistance then begin
 					if UseRC then begin
-						if not RayCast(X, Y, X2, Y2-10, false, true, false) then continue;							
+						if not RayCast(X, Y, X2, Y2-10, false, true, false) then continue;
 					end;
 					FoundInRange := true;
 					if Math.Abs(ShortenAngle(Math.arctan2(Vy, Vx) - A)) > MaxAngleDiff then continue;

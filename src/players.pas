@@ -19,8 +19,8 @@ type
 	tPos = record
 		active: boolean;
 		x, y: single;
-	end;	
-	
+	end;
+
 	tResistance = record
 		General,
 		Explosion,
@@ -32,15 +32,15 @@ type
 		HolyWater,
 		ExoMagic: single;
 	end;
-	
+
 	tLSPlayer = record
 		// Basic player info
 		Status: shortint;		// -2: dead-zombie-player; -1 zombie-player; 0: not-playing/zombie-bot; 1: alive-player; 2: temp-infected-player;
 		Participant: shortint;	// -1: zombie team (human player); 0: bot or something; 1: human team.
-		
+
 		// Equipment
 		Waves, mre, Mines, Charges, Wires, Sentrys, SentryAmmo, Molotovs, Statguns, Scarecrows, HolyWater: word;
-		
+
 		// Health, damage related stuff;
 		Resistance: tResistance;
 		DamageFactor: single;
@@ -50,22 +50,22 @@ type
 		MaxDamagePerHit: single;
 		HeadShootBonus: single;
 		ChainsawDamageFactor: double;
-		
+
 		// Mechanic
 		WrenchCooldown: byte;
-		
+
 		// Priest
 		SprinkleNum, SprinkleCooldown, ShowerCooldown: byte;
 		ExoTimer: smallint;
-		
+
 		// DemoMan
 		DetonationQueue: tStack8;
 		DetonationsNum: shortint;
-		
+
 		// Kamikaze
 		KamiDetonate: byte;
 		KamiKiller: byte;
-		
+
 		SpecTimer, VotedMap, VotedMode: integer;
 		FlakTime: cardinal;
 		HurtTime, TicksAtSpawn, BossPlayTime, ZombiePlayTime, RespawnTime: longint;
@@ -74,9 +74,9 @@ type
 		pri, LastShooter,  ReloadTime, AfkSpawnTimer, AfkSpawnNum: byte;
 		VoteReady, ModeReady, JustResp, GetX,
 		Zombie, frozen, AttackReady, Respawned, AZSS_DontObserve,
-		bitten, voted, justjoined, kicked, ReloadMode, AutoVote, StoreAutoVote, ShowTaskinfo, played, 
+		bitten, voted, justjoined, kicked, ReloadMode, AutoVote, StoreAutoVote, ShowTaskinfo, played,
 		AntiBlockProtection, RespawnPlayer, Admin, GodMode, Boss: boolean;
-		
+
 		SpawnTimer: smallint;
 		ActiveWeapons: array[1..15] of boolean;
 		TempActiveWeapons: array[1..15] of boolean;
@@ -88,19 +88,19 @@ type
 		end;
 		StuckCD: byte;
 		LastPos: tPos;
-		
+
 		// Mouse
 		LastMouseX,
 		LastMouseY: single;
 		MousePointTime: integer;
 	end;
-	
+
 	tMedic = record
 		x, y: single;
 		HealSpeed: smallint;
 		ID: shortint;
 	end;
-		
+
 	tCop = record
 		ID: shortint;
 		SupplyPoints: single;
@@ -113,7 +113,7 @@ type
 			X, Y: single;
 		end;
 	end;
-		
+
 	tDemoMan = record
 		ID: shortint;
 	end;
@@ -126,11 +126,11 @@ var
 	Mechanic: byte;
 	Priest: byte;
 	Sharpshooter: byte;
-		
+
 procedure Resistance_FillMissingIn(var Res: TResistance; DefaultRes: single);
-		
+
 function Players_IDByTask(Task: byte): integer;
-	
+
 function Players_ZombieIDByTask(Task: byte): integer;
 
 function Players_OnGround(ID: byte; RC_CheckPlayerOnlyCollide: boolean; range: single): smallint;
@@ -225,7 +225,7 @@ begin
 			break;
 		end;
 end;
-	
+
 function Players_ZombieIDByTask(Task: byte): integer;
 var i: integer;
 begin
@@ -247,7 +247,7 @@ begin
 	player[ID].Respawned := false;
 	player[ID].SpecTimer := 0;
 	player[ID].KickTimer := 0;
-	player[ID].boss := false;	
+	player[ID].boss := false;
 	player[ID].jumping := 0;
 	player[ID].jump := 0;
 	player[ID].pri := WTYPE_NOWEAPON;
@@ -289,7 +289,7 @@ begin
 	player[ID].AZSS_DontObserve := false;
 	player[ID].MaxDamagePerSec := 0;
 	player[ID].DamagePerSec := 0;
-	player[ID].MaxDamagePerHit := 0
+	player[ID].MaxDamagePerHit := 0;
 	player[ID].HeadShootBonus := 0;
 	player[ID].KamiDetonate := 0;
 	player[ID].KamiKiller := 0;
@@ -323,7 +323,7 @@ end;
 procedure Players_ClearStats(ID: byte);
 begin
 	player[ID].kills := 0;
-	player[ID].zombdamage := 0;	
+	player[ID].zombdamage := 0;
 end;
 
 function Players_OnGround(ID: byte; RC_CheckPlayerOnlyCollide: boolean; range: single): smallint;

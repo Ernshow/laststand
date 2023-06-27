@@ -9,9 +9,7 @@ unit BaseWeapons;
 interface
 
 uses
-{$ifdef FPC}
 	Scriptcore,
-{$endif}
 	Bigtext,
 	Constants,
 	lsplayers,
@@ -28,11 +26,11 @@ type
 		Num, Cost: integer;
 		Used, Buyable: boolean;
 	end;
-	
+
 	tWeaponSystem = record
 		Enabled: boolean;
 	end;
-	
+
 var
 	Weapon: array[1..15] of tLSWeapon;
 	WeaponSystem: tWeaponSystem;
@@ -42,7 +40,7 @@ var
 procedure BaseWeapons_RefreshActive();
 
 procedure BaseWeapons_AddTaskWeapons(ID: byte);
-							
+
 procedure BaseWeapons_Refresh(OnStart: boolean);
 
 procedure BaseWeapons_Add(Weap: byte; Num: integer; Owner: byte);	//Owner should not be told of "new weapon in base" -> call with 0 if no owner
@@ -55,7 +53,7 @@ procedure BaseWeapons_OnPlayerRespawn(ID: byte);
 
 // Kills weapon objects in base
 procedure BaseWeapons_ClearBase();
-	
+
 // Called from WeaponMenu unit as a callback.
 procedure Baseweapons_OnWeaponTake(ID, Primary, Secondary: byte);
 
@@ -103,9 +101,9 @@ begin
 		if player[j].Participant = 1 then begin
 			has_something := false;
 			for i := 1 to 14 do begin
-					player[j].TempActiveWeapons[i] := 
+					player[j].TempActiveWeapons[i] :=
 						((not task_weap[i]) and (Weapon[i].Num > 0)) or
-						(player[j].ActiveWeapons[i] and ((Weapon[i].Num > 0) or (Weapon[i].Num = -1))) or 
+						(player[j].ActiveWeapons[i] and ((Weapon[i].Num > 0) or (Weapon[i].Num = -1))) or
 						(Weapon[i].Num > other_menus[i]);
 					has_something := has_something or player[j].TempActiveWeapons[i];
 			end;
@@ -127,7 +125,7 @@ begin
 			Weapon[i].Used := true;
 		end;
 end;
-						
+
 procedure BaseWeapons_Refresh(OnStart: boolean);
 var i, j: byte;
 begin // decide what weapons are for all, what only for certain tasks
@@ -141,7 +139,7 @@ begin // decide what weapons are for all, what only for certain tasks
 				BaseWeapons_AddTaskWeapons(j);
 		end;
 	end else
-		for i := 1 to 14 do begin	
+		for i := 1 to 14 do begin
 			Weapon[i].Used := false;
 			for j := 1 to MaxID do
 				if player[j].Participant = 1 then
@@ -161,7 +159,7 @@ begin
 	if Weapon[Weap].Num <= 0 then Weapon[Weap].Num := 0;
 	BaseWeapons_RefreshActive();
 	if Num > 0 then begin
-		for i := 1 to MaxID do 
+		for i := 1 to MaxID do
 			if player[i].Status = 1 then
 			if player[i].TempActiveWeapons[Weap] then begin
 				WeaponMenu_SwitchWeapon(i, Weap, true);
@@ -199,7 +197,7 @@ begin
 				BaseWeapons_Add(weap2menu(Players[ID].Primary.WType), 1, ID);
 				WriteConsole(ID, WeaponName(Players[ID].Primary.WType) + ' put back into base.', NWSCOL);
 			end;
-		
+
 			//Kill the weapon he's about to drop
 			for i := 1 to MAX_OBJECTS do begin
 				if Map.Objects[i].Active then
@@ -226,7 +224,7 @@ begin
 		for i := 1 to 14 do begin
 			WeaponMenu_SwitchWeapon(ID, i, player[ID].TempActiveweapons[i]);
 		end;
-	
+
 		t := 0;
 		str := 'Weapons in base:'+ #13#10;
 		for i := 1 to 14 do
@@ -265,18 +263,18 @@ begin
 			end;
 		end;
 end;
-	
+
 // Called from WeaponMenu unit
 procedure Baseweapons_OnWeaponTake(ID, Primary, Secondary: byte);
 var po, so, i: byte; pr, sr: boolean; str: string;
 begin
 	if player[ID].Status <> 1 then exit;
-	
+
 	// If he's the mechanic, give him a flamer
 	if Player[ID].ActiveWeapons[15] then begin
 		if (Players[ID].Secondary.WType = WTYPE_NOWEAPON) then begin
 			Weapons_Force(ID, Players[ID].Primary.WType, WTYPE_FLAMER, Players[ID].Primary.Ammo, 255);
-		end else 
+		end else
 		if (Players[ID].Primary.WType = WTYPE_NOWEAPON) then begin
 			Weapons_Force(ID, WTYPE_FLAMER, Players[ID].Secondary.WType, 255, players[ID].Secondary.Ammo);
 		end else
@@ -284,7 +282,7 @@ begin
 			Weapons_Force(ID, Players[ID].Primary.WType, WTYPE_FLAMER, Players[ID].Primary.Ammo, 255);
 		end
 	end;
-	
+
 	//|| Take Weapons out of base
 	if WeaponSystem.Enabled then
 	begin
@@ -302,7 +300,7 @@ begin
 				sr := (Weapon[so].Num > -1); // -1 is inf
 			if sr then BaseWeapons_Add(so, -1, 0);
 		end;
-		
+
 		if (pr) or (sr) then
 		begin
 			str := '';
@@ -311,7 +309,7 @@ begin
 			if (sr) then str := str + IntToStr(Weapon[so].Num) + 'x ' + WeaponName(Secondary);
 			WriteConsole(ID, str + ' left in Base.', NWSCOL);
 		end;
-		
+
 		if Cop.ID > 0 then begin
 			for i := 1 to 10 do
 				if Weapon[i].Num > 0 then
@@ -329,7 +327,7 @@ begin
 			str := str + '" to buy weapons';
 			WriteConsole(Cop.ID, str, NWSCOL);
 		end;
-	end;		
+	end;
 end;
 
 procedure BaseWeapons_Get(ID: byte);
@@ -340,7 +338,7 @@ begin
 	begin
 		b := Weapons_IsRegular(Players[ID].Primary.Wtype) and (Players[ID].Primary.Wtype <> WTYPE_MINIGUN);
 		c := Weapons_IsRegular(Players[ID].Secondary.Wtype) and (Players[ID].Secondary.Wtype <> WTYPE_MINIGUN);
-		if (b) or (c) then 
+		if (b) or (c) then
 			WriteConsole(ID, iif(b, WeaponName(Players[ID].Primary.WType), '')
 					+ iif((b) and (c), ' and ', '')
 					+ iif(c, WeaponName(Players[ID].Secondary.WType), '')
@@ -376,7 +374,7 @@ begin
 	if AdditionalInfo then begin
 		str := str + #13#10 + 'Type "/get" to pick new weapons';
 		if player[ID].task = 6 then
-			str := str + #13#10 + 'Type "/weap" to buy weapons for your team'; 
+			str := str + #13#10 + 'Type "/weap" to buy weapons for your team';
 	end;
 	Y := Y + incr*t;
 	scale := 0.07 - 0.0015*t;

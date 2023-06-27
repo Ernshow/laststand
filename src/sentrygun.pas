@@ -9,9 +9,7 @@ unit sentrygun;
 interface
 
 uses
-{$ifdef FPC}
 	Scriptcore,
-{$endif}
 	Ballistic,
 	BigText,
 	Botwizard,
@@ -43,7 +41,7 @@ type
 
 var
 	Sentry: tSentry;
-	
+
 type
 	Sentry_Operation = (fix, retrieve, load_ammo);
 
@@ -76,7 +74,7 @@ const
 	SENTRY_RETRIEVALTIME = 5;
 	SENTRY_AMMOINBELT = 320; // 280 -> 320
 	SENTRY_RANGE = 600;
-	SENTRY_RELOADTIME = 3; 
+	SENTRY_RELOADTIME = 3;
 	SENTRY_AIMSPEED = 0.55; // 0.6 -> 0.55
 	SENTRY_BULLETTYPE = 1;
 	SENTRY_INTERVAL = 6; // ticks
@@ -164,7 +162,7 @@ begin
 								ang := ang * SENTRY_AIMSPEED + Sentry.FireAngle * SENTRY_iAIMSPEED;
 							end;
 						end else if target_changed then exit;
-					Sentry.FireAngle := ang;						
+					Sentry.FireAngle := ang;
 					Sentry.Ammo := Sentry.Ammo - 1;
 					//Shoot(x, y, Angle, add_vx, add_vy, vmin, vmax, Spread, Accuracy, Damage: single; Style, ID, n: byte);
 					Shoot(X, Y, ang, 0, 0, Sentry.Speed - 2, Sentry.Speed + 2, 0, Sentry.Accuracy*Sentry.Recoil, -Sentry.Damage, Sentry.AmmoType, Sentry.ID, 1);
@@ -330,9 +328,9 @@ end;
 procedure Sentry_Observe();
 var X, Y, X2, Y2: single; i: byte; str: string; sdist: single; found: boolean;
 begin
-	
+
 	if Sentry.Active then begin
-		case Sentry.Status of 
+		case Sentry.Status of
 			1: begin // gun ready to fire
 				GetPlayerXY(Sentry.ID, X, Y);
 				Y := Y - 10;
@@ -376,7 +374,7 @@ begin
 								if Sentry.State <> 3 then begin
 									Sentry_OpenFire();
 									Sentry.State := 3; // "active" (shooting)
-									Sentry.Timer := 0; 
+									Sentry.Timer := 0;
 									Weapons_Force(Sentry.ID, WTYPE_BOW2, WTYPE_NOWEAPON, 1, 1);
 								end;
 							end else begin
@@ -416,11 +414,11 @@ begin
 								Sentry.State := 2;
 						end;
 					end;
-						
+
 				if Players[Sentry.Owner].Alive then
 					if IsInRange(Sentry.Owner, X, Y, 40, false) then begin
 						str := 'State: ' + Sentry_State(Sentry.State) + #13#10 +
-							'Ammo: ' + Sentry_AmmoStatus() + #13#10 + 
+							'Ammo: ' + Sentry_AmmoStatus() + #13#10 +
 							'HP: ' + IntToStr(100 * Sentry.Hp div SENTRY_HP) + '%';
 						if Sentry.Ammo <= 100 then
 							//if player[i].sentryammo > 0 then
@@ -525,7 +523,7 @@ begin
 	Sentry.Status := 2; // construction
 	Sentry.Timer := SENTRY_CONSTRUCTIONTIME;
 	Sentry.Owner := ID;
-end; 
+end;
 
 procedure Sentry_TryOperation(ID: byte; _type: Sentry_Operation);
 begin

@@ -9,16 +9,15 @@ unit EarthQuake;
 interface
 
 uses
-{$ifdef FPC}
   Scriptcore,
-{$endif}
+	Configs,
   Bigtext,
   LSPlayers,
   Globals,
   Ballistic,
   maths,
   MersenneTwister;
-  
+
 type
   tEarthQuake = record
     Active: boolean;
@@ -26,10 +25,10 @@ type
     TimeStarted, Duration: longint;
     Phase, Direction: single;
   end;
-  
+
 var
   EarthQuake: tEarthQuake;
-  
+
 procedure EarthQuake_Reset();
 
 procedure EarthQuake_Process(MainCall: boolean);
@@ -40,16 +39,15 @@ implementation
 
 const
   EQ_MAXAPLITUDE = DEFAULTGRAVITY * 12.0;
-  EQ_PRESSURE = DEFAULTGRAVITY*2;
+  EQ_PRESSURE = DEFAULTGRAVITY * 2;
 
 procedure EarthQuake_Reset();
 begin
   EarthQuake.Active := false;
   EarthQuake.Timer := 0;
-  Game.Gravity := DEFAULTGRAVITY;
-  Game.Gravity := DEFAULTGRAVITY;
+  Game.Gravity := LSMap.Gravity;
 end;
-  
+
 procedure EarthQuake_Process(MainCall: boolean);
 var DeltaT, modifier: single;
 begin
@@ -59,7 +57,7 @@ begin
       DeltaT := Game.TickCount-EarthQuake.TimeStarted;
       modifier := Sqr(sin(DeltaT*EarthQuake.Phase)) // local modifier, waves are determined by sin^x
         * Sqrt(sin(ANG_PI*Sqr(DeltaT/EarthQuake.Duration))); // global modifier, Sqrt(sin(x^2)) (0 <= x^2 <= pi), raises gradually, drops significantly at the end
-      Game.Gravity := DEFAULTGRAVITY + modifier * EQ_MAXAPLITUDE * (EarthQuake.Direction+EQ_PRESSURE);
+      Game.Gravity := LSMap.Gravity + modifier * EQ_MAXAPLITUDE * (EarthQuake.Direction+EQ_PRESSURE);
       ServerModifier('Gravity', Game.Gravity);
       if RandInt_(3) = 0 then
         if HackermanMode then begin

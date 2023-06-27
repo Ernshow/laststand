@@ -2,17 +2,16 @@
 //  |  Cluster bombs  |
 //  * --------------- *
 
-// This is a part of {LS} Last Stand. 
+// This is a part of {LS} Last Stand.
 
 unit ClusterBombs;
 
 interface
 
 uses
-{$ifdef FPC}
 	Scriptcore,
-{$endif}
 	Ballistic,
+	Configs,
 	maths,
 	Misc,
 	MersenneTwister,
@@ -29,16 +28,16 @@ type
 		Timer, Owner, Style: byte;
 		Active: boolean;
 	end;
-	
+
 var
-	Bomb:        array[1..MAX_BOMBS] of tClusterBomb;
-	
+	Bomb: array[1..MAX_BOMBS] of tClusterBomb;
+
 function ClusterBomb_Spread(X, Y, Spread: single; Owner: byte; Time: word; N: byte; CastingCharge: boolean): boolean;
 
 procedure ClusterBomb_Clear(a: byte);
 
 procedure ClusterBomb_Process();
-	
+
 implementation
 
 function ClusterBomb_Spread(X, Y, Spread: single; Owner: byte; Time: word; N: byte; CastingCharge: boolean): boolean;
@@ -58,7 +57,7 @@ begin
 		Bomb[a].Timer := Time;
 		Time := Time * 60 + 60 - (Game.TickCount + 1) mod 60 - 1;
 		SetLength(Bomb[a].Fragment, N);
-		g := -G_BUL * Game.Gravity / DEFAULTGRAVITY;
+		g := -G_BUL * Game.Gravity / (LSMap.Gravity + 0.00001);
 		if CastingCharge then
 			if not IsInRange(owner, X, Y, 50, false) then
 				if not Raycast(X, Y, X, Y + 15, false, true, true) then

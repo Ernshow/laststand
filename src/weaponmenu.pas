@@ -9,9 +9,7 @@ unit WeaponMenu;
 
 interface
 uses
-	{$ifdef FPC}
-		Scriptcore,
-  {$endif}
+	Scriptcore,
   Misc;
 
 type WeaponMenu_WeaponChoiceCallback = procedure(ID, Pri, Sec: Byte);
@@ -50,7 +48,7 @@ type
 		Enabled: boolean;
 		Refreshn: integer;
 	end;
-	
+
 	tWMPlayer = record
 		Weapons: array[1..14] of tWMWeap;
 		RX: single;
@@ -59,7 +57,7 @@ type
 		GettingWeapon: boolean;
 		Respawning: boolean;
 	end;
-	
+
 var
 	WMP: array[1..32] of tWMPlayer;
 	WeapTakenCB: WeaponMenu_WeaponChoiceCallback;
@@ -80,7 +78,7 @@ begin
 		if (WMP[ID].Weapons[i].Refreshn > 0) then begin
 			WMP[ID].Weapons[i].Refreshn := WMP[ID].Weapons[i].Refreshn - 1;
 			// Remember if there is still something left to update
-			result := (WMP[ID].Weapons[i].Refreshn > 0) or result;
+			Result := (WMP[ID].Weapons[i].Refreshn > 0) or result;
 			// Send SetWeaponActive packet
 			//writeconsole(0, 'swa ' + inttostr(i) + ' ' + iif(WMP[ID].Weapons[i].Enabled, 't', 'f'), $ffffff);
 			Players[ID].WeaponActive[i] := WMP[ID].Weapons[i].Enabled;
@@ -92,7 +90,7 @@ begin
 	end;
 	WMP[ID].FirstToUpdate := i;
 end;
-	
+
 procedure WeaponMenu_SwitchWeapon(ID, Weap: byte; State: boolean);
 begin
 	if (ID < 1) or (ID > 32) then begin
@@ -224,7 +222,7 @@ end;
 procedure WeaponMenu_OnTick();
 var i: integer;
 begin
-	
+
 	// If there are still some players with menus to update
 	if Working then begin
 		Working := false;

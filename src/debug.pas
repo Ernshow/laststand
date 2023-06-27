@@ -1,13 +1,11 @@
 unit Debug;
 
 interface
-	
+
 uses
-{$ifdef FPC}
 	Scriptcore,
-{$endif}
 	Constants; // for debug level
-	
+
 procedure WriteDebug(Level: byte; Message: string);
 
 procedure Assert(Condition: boolean; Message: string);

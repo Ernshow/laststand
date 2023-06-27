@@ -2,16 +2,14 @@
 // |      Statguns      |
 // * ------------------ *
 
-// This is a part of {LS} Last Stand. 
+// This is a part of {LS} Last Stand.
 
 unit Statguns;
 
 interface
 
 uses
-{$ifdef FPC}
   Scriptcore,
-{$endif}
 	Bigtext,
 	Constants,
 	Globals,
@@ -19,11 +17,11 @@ uses
 	MersenneTwister,
 	Misc,
 	Raycasts;
-	
+
 const
 	BUILDTIME = 	 15;
 	RETRIEVETIME =  9;
-	
+
 type
 	tStat = record
 		x, y: single;
@@ -76,7 +74,7 @@ procedure Statguns_Get( plID: byte; index: integer  );
 begin
 	if SG.BuildTimer <> 0 then
 	begin
-		WriteConsole( plID, 'You can only build/retrieve one statgun at a time!', RED) 
+		WriteConsole( plID, 'You can only build/retrieve one statgun at a time!', RED)
 	end else
 	begin
 		WriteConsole( plID, 'Retrieving statgun, do not move!', GREEN);
@@ -109,7 +107,7 @@ begin
 end;
 
 procedure Statguns_DestroySG(ID: byte; byPlayer: boolean );
-var 
+var
 	a: integer;
 begin
 	if SG.Num > 1 then begin
@@ -117,7 +115,7 @@ begin
 		SG.Num := SG.Num - 1;
 		KillObject( statgun[ID].reference );
 		if byPlayer = true then begin
-			player[ statgun[ID].owner ].statguns := player[ statgun[ID].owner ].statguns + 1; 
+			player[ statgun[ID].owner ].statguns := player[ statgun[ID].owner ].statguns + 1;
 			WriteConsole( statgun[SG.Num].owner, 'Statgun retrieved! '+IntToStr(player[ statgun[SG.Num].owner ].statguns)+' statguns available.', GREEN);
 		end;
 		for a := ID to SG.Num - 1 do begin
@@ -136,7 +134,7 @@ begin
 		Statguns_DestroySG(0, false);
 	end;
 	SG.BuildTimer := 0;
-	SG.Num := 1;	
+	SG.Num := 1;
 end;
 
 procedure Statguns_Clear();
@@ -189,7 +187,7 @@ begin
 				SG.BuildTimer := 0;
 			end;
 		end;
-		
+
 		if SG.BuildTimer = 1 then begin
 			SG.BuildTimer := 0;
 			Statguns_Ceate();

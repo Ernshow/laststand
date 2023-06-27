@@ -3,9 +3,7 @@ unit Hax;
 interface
 
 uses
-{$ifdef FPC}
 	Scriptcore,
-{$endif}
 	Misc,
 	Ballistic;
 
@@ -18,17 +16,17 @@ implementation
 const
 	VACUUM_RANGE = 400.0;
 	VACUUM_FORCE = 2.0;
-	
+
 	AIMBOT_RANGE = 680.0;
 	AIMBOT_VELOCITY = 15.0;
-	
-	
+
+
 type
 	tHaxPlayer = record
 		Vacuum: boolean;
 		AimBot: boolean;
 	end;
-	
+
 var
 	HaxPlayers: array [1..32] of tHaxPlayer;
 
@@ -59,7 +57,7 @@ begin
 end;
 
 procedure Hax_Vacuum(ID: integer);
-var 
+var
 	i: integer;
 	r, vx, vy: single;
 begin
@@ -81,7 +79,7 @@ begin
 end;
 
 procedure Hax_AimBot(ID: integer);
-var 
+var
 	i, t: integer;
 	r: single;
 	max_r: single;

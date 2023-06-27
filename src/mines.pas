@@ -2,7 +2,7 @@
 //  |     Mines     |
 //  * ------------- *
 
-// This is a part of {LS} Last Stand. 
+// This is a part of {LS} Last Stand.
 
 unit Mines;
 
@@ -11,11 +11,11 @@ interface
 uses
 	Players,
 	Misc,
-	Math;
-	
+	Maths;
+
 const
 	MAX_MINES = 	 20;
-	
+
 type
 	tMineSyst = record
 		PS, SR, MaxAngle, RMax, RMin: single;
@@ -29,7 +29,7 @@ type
 
 var
 	Mines: tMineSyst;
-	
+
 function Mines_Place(ID: byte): boolean;
 
 procedure Mines_TryPlace(ID: byte);
@@ -109,7 +109,7 @@ begin
 							begin
 								GetPlayerXY(j, x, y);
 								v2x:=Mines.Mine[i].X-x;
-								if Abs(v2x) <= Mines.RMax*2 then 
+								if Abs(v2x) <= Mines.RMax*2 then
 								begin
 									v2y:=Mines.Mine[i].Y-2-y;
 									if Abs(v2y) <= Mines.RMax*2 then
@@ -120,7 +120,7 @@ begin
 												continue;
 										end;
 										v1x:=Players[j].VELX;
-										v1y:=Players[j].VELY;										
+										v1y:=Players[j].VELY;
 										r:=ToRangeF(Mines.RMin, Sqrt(v1x*v1x + v1y*v1y)*Mines.SR, Mines.RMax);
 										if IsInRange(j, Mines.Mine[i].X + v1x*Mines.PS * r / Mines.RMax, Mines.Mine[i].Y + v1y*Mines.PS * r / Mines.RMax, r, false) then begin //TODO: false?
 											//nova_2(Mines.Mine[i].X + v1x*Mines.PS * r / Mines.RMax, Mines.Mine[i].Y + v1y*Mines.PS * r / Mines.RMax, 0, 0, r, 0, 0, ANG_2PI,0, 10, 5, Mines.Mine[i].owner);
@@ -138,7 +138,7 @@ begin
 											CreateBulletX( Mines.Mine[i].X + RandFlt(-24,24), Mines.Mine[i].Y - RandFlt(8,16), 0, 0, 99, 4, Mines.Mine[i].owner);
 											CreateBulletX( Mines.Mine[i].X, Mines.Mine[i].Y -10, RandFlt(-7, 7), RandFlt(-4, 0), 0, 14, Mines.Mine[i].owner);
 											if player[Mines.Mine[i].owner].Status > 0 then owner := Mines.Mine[i].owner else owner := 0;
-											Damage_ZombiesAreaDamage(owner, Mines.Mine[i].X, Mines.Mine[i].Y, 75, 130, 4000, true); 									
+											Damage_ZombiesAreaDamage(owner, Mines.Mine[i].X, Mines.Mine[i].Y, 75, 130, 4000, true);
 											WriteConsole( Mines.Mine[i].owner, 'Your mine detonated!', GREEN);
 											// refresh max mine id
 											if i = Mines.MaxMineID then begin

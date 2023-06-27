@@ -3,9 +3,7 @@ unit TaskPolice;
 interface
 
 uses
-{$ifdef FPC}
 	Scriptcore,
-{$endif}
 	BaseWeapons,
 	BigText,
 	Constants,
@@ -415,6 +413,15 @@ var b, taken: boolean;
 begin
   {$IFNDEF FPC}
 	case Copy(Name, 1, 4) of
+		'beer': begin
+			if Amount < 1 then Amount := 1;
+			if Cop.SupplyPoints >= BEERCOST * Amount then
+			begin
+				if Objects_SpawnX(Cop.ID, OBJECT_MEDICAL_KIT, Amount) then Cop.SupplyPoints := Cop.SupplyPoints - BEERCOST * Amount;
+			end else b:=true;
+			Name := 'Beer';
+		end;
+
 		'vest': begin
 			if Amount < 1 then Amount := 1;
 			if Cop.SupplyPoints >= VESTCOST * Amount then

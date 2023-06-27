@@ -7,9 +7,7 @@ unit INI;
 interface
 
 uses
-{$ifdef FPC}
 	Scriptcore,
-{$endif}
 	Misc;
 
 type
@@ -23,7 +21,7 @@ type
 	end;
 
 function INI_Load(var IniFile: tINI; FileName: string): boolean;
-	
+
 function INI_Get(var IniFile: tINI; Section, Key, Default: string; var FoundKey: boolean): string;
 
 procedure INI_Set(var IniFile: tINI; Section, Key, Value: string; var changed: boolean);
@@ -66,7 +64,7 @@ begin
 		Result := true;
 	end;
 end;
-	
+
 function INI_Get(var IniFile: tINI; Section, Key, Default: string; var FoundKey: boolean): string;
 var i, j: integer;
 begin
@@ -100,14 +98,14 @@ begin
 		Inifile.Section[l].Name := Section;
 		i := l;
 	end else found := false;
-	
+
 	l := Length(IniFile.Section[i].Key);
 	for j := 0 to l - 1 do // check if the key exists
 		if IniFile.Section[i].Key[j].Name = Key then begin
 			found := true;
 			break;
 		end;
-	
+
 	if not found then begin // if not, create one
 		SetLength(IniFile.Section[i].Key, l + 1);
 		Inifile.Section[i].Key[l].Name := Key;

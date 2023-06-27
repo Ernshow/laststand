@@ -9,9 +9,7 @@ unit Fire;
 interface
 
 uses
-{$ifdef FPC}
 	Scriptcore,
-{$endif}
   Misc,
   MersenneTwister,
   maths,
@@ -27,21 +25,21 @@ type Fires_InFireCallback = procedure(ID, owner: byte);
 /// Creates a single flame
 /// @param X Coords
 /// @param Y Coords
-/// @param duration Time of burning 
+/// @param duration Time of burning
 /// @param owner owner
 procedure Fire_CreateSingleFlame(X, Y: single; duration: integer; owner: byte);
 
 /// Creates burning area consisiting of multiple flames.
 /// @param X Coords
 /// @param Y Coords
-/// @param duration Time of burning [s] 
+/// @param duration Time of burning [s]
 /// @param N number of flames
 /// @param owner owner
 procedure Fire_CreateBurningArea(X, Y, ParticleVel, CastingRange: single; duration, n: integer; owner: byte);
-	
+
 /// Creates burning area consisiting of multiple flames from tVector;
 /// @param flame Array of vectors
-/// @param duration Time of burning 
+/// @param duration Time of burning
 /// @param owner owner
 procedure Fire_CreateFromVector(var flame: array of tTVector; duration: integer; owner: byte);
 
@@ -50,7 +48,7 @@ procedure Fire_Process();
 /// Initializes the unit
 /// @param Fires_InFireCallback Function "pointer" to user in-fire event.
 procedure Fire_Initialise(InFireCallback: Fires_InFireCallback);
-	
+
 /// Clears ith fire from the map
 /// @param Fire id
 procedure Fire_Clear(i: byte);
@@ -62,22 +60,22 @@ procedure Fire_ClearAll();
 /// @param Owner ID
 procedure Fire_ClearByOwner(ID: byte);
 
-	
+
 implementation
-	
+
 type
 	tFire = record
 		t, c: integer;
 		x, y: single;
 		owner: byte;
 	end;
-	
+
 var
 	Fires: array [0..MAX_FIRES] of tFire;
 	MaxFireID: integer;
 	FireCallback: Fires_InFireCallback;
 	CallNum: integer;
-	
+
 procedure Fire_CreateSingleFlame(X, Y: single; duration: integer; owner: byte);
 var i: integer;
 begin

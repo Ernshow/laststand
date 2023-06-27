@@ -9,9 +9,7 @@ unit botwizard;
 interface
 
 uses
-{$ifdef FPC}
 	Scriptcore,
-{$endif}
 	MersenneTwister;
 
 const
@@ -65,9 +63,8 @@ var
 
 implementation
 
-
 var
-	BW_NormalZombies, BW_VomitingZombies, BW_BurningZombies, BW_KamikazeZombies, BW_ButcherPartZombies, 
+	BW_NormalZombies, BW_VomitingZombies, BW_BurningZombies, BW_KamikazeZombies, BW_ButcherPartZombies,
 	BW_HaxNormalZombies, BW_HaxVomitingZombies, BW_HaxBurningZombies, BW_HaxKamikazeZombies, BW_HaxButcherPartZombies: array of tBW_ZombieRecord;
 	BW_CustomZombies: array of tBW_ZombieDefinition;
 	BW_NormalTauntsKill, BW_NormalTauntsDie, BW_NormalTauntsDmg, BW_NormalTauntsSee, BW_NormalTauntsWin,
@@ -80,9 +77,9 @@ var
 	BW_HaxBurningTauntsKill, BW_HaxBurningTauntsDie, BW_HaxBurningTauntsDmg, BW_HaxBurningTauntsSee, BW_HaxBurningTauntsWin,
 	BW_HaxKamikazeTauntsKill, BW_HaxKamikazeTauntsDie, BW_HaxKamikazeTauntsDmg, BW_HaxKamikazeTauntsSee, BW_HaxKamikazeTauntsWin,
 	BW_HaxPartTauntsKill, BW_HaxPartTauntsDie, BW_HaxPartTauntsDmg, BW_HaxPartTauntsSee, BW_HaxPartTauntsWin: array of string;
-	BW_Firefighter, BW_Satan, BW_Butcher, BW_Priest, BW_Plague, BW_Trap, BW_Flame, 
+	BW_Firefighter, BW_Satan, BW_Butcher, BW_Priest, BW_Plague, BW_Trap, BW_Flame,
 	BW_Minion, BW_AltarServer, BW_Artifact, BW_KamikazeBoss, BW_Scarecrow, BW_Sentry,
-	BW_HaxFirefighter, BW_HaxSatan, BW_HaxButcher, BW_HaxPriest, BW_HaxPlague, BW_HaxTrap, BW_HaxFlame, 
+	BW_HaxFirefighter, BW_HaxSatan, BW_HaxButcher, BW_HaxPriest, BW_HaxPlague, BW_HaxTrap, BW_HaxFlame,
 	BW_HaxMinion, BW_HaxAltarServer, BW_HaxArtifact, BW_HaxKamikazeBoss, BW_HaxScarecrow, BW_HaxSentry: tBW_ZombieDefinition;
 	BW_CurrentNormalZombieIndex, BW_CurrentVomitingZombieIndex, BW_CurrentBurningZombieIndex, BW_CurrentKamikazeZombieIndex: Integer;
 	BW_NeedShuffleNormalZombies, BW_NeedShuffleVomitingZombies, BW_NeedShuffleBurningZombies, BW_NeedShuffleKamikazeZombies: Boolean;
@@ -90,10 +87,10 @@ var
 procedure BW_RandZombChat(ID: byte; TextsArray: array of string; chance: single);
 begin
 	if RandFlt_() < chance then
-	if Length(TextsArray) > 0 then 
+	if Length(TextsArray) > 0 then
 		Players[ID].Say(TextsArray[RandInt_(Length(TextsArray)-1)]);
 end;
-	
+
 function BW_RandomGreen(): longword;
 begin
 	Result := random( $10, $70 ) or (random( $40, $99 ) shl 8) or (random( $10, $70 ) shl 16);
@@ -160,14 +157,14 @@ begin
 end;
 
 procedure BW_LoadBots(ini: TIniFile; name: string; var recordArr: array of tBW_ZombieRecord);
-{$ifndef FPC}
+{$ifdef SCRIPT}
 var
     values: TStringList;
     i, j: integer;
     zombieRecord: tBW_zombieRecord;
 {$endif}
 begin
-  {$ifndef FPC}
+  {$ifdef SCRIPT}
 	values := File.CreateStringList();
 	ini.ReadSection(name, values);
 	SetArrayLength(recordArr, values.Count);
@@ -178,7 +175,7 @@ begin
 		begin
 		j := GetArrayLength(BW_CustomZombies);
 		SetArrayLength(BW_CustomZombies, j + 1);
-		BW_LoadCustomBot(ini, values[i], BW_CustomZombies[j])
+		BW_LoadCustomBot(ini, values[i], BW_CustomZombies[j]);
 		zombieRecord.CustomDefinitionIndex := j;
 		end
 		else
@@ -189,13 +186,13 @@ begin
 end;
 
 procedure BW_LoadTaunts(ini: TIniFile; name: string; var tauntsArr: array of string);
-{$ifndef FPC}
+{$ifdef SCRIPT}
 var
 	values: TStringList;
 	i: integer;
 {$endif}
 begin
-  {$ifndef FPC}
+  {$ifdef SCRIPT}
 	values := File.CreateStringList();
 	try
 		ini.ReadSectionRaw(name, values);
@@ -239,13 +236,13 @@ begin
 end;
 
 procedure BW_LoadFile(path: string);
-{$ifndef FPC}
+{$ifdef SCRIPT}
 var
 	BotFile: TIniFile;
   tmp: array of string;
 {$endif}
 begin
-	{$ifndef FPC}
+	{$ifdef SCRIPT}
   if not File.Exists(path) then
 	begin
 		WriteDebug(10, 'bots.ini file not found, bot wizard cannot continue. Unloading.')
@@ -255,15 +252,15 @@ begin
 	try
 		BW_LoadBots(BotFile, 'Zombies', BW_NormalZombies);
 		BW_LoadBots(BotFile, 'Parts', BW_ButcherPartZombies);
-	
-		BW_ConditionalLoadBots(BotFile, 'Burning', BW_BurningZombies, BW_NormalZombies);		
+
+		BW_ConditionalLoadBots(BotFile, 'Burning', BW_BurningZombies, BW_NormalZombies);
 		BW_ConditionalLoadBots(BotFile, 'Vomiting', BW_VomitingZombies, BW_NormalZombies);
 		BW_ConditionalLoadBots(BotFile, 'Kamikaze', BW_KamikazeZombies, BW_NormalZombies);
-		
+
 		BW_ConditionalLoadBots(BotFile, 'HaxZombies', BW_HaxNormalZombies, BW_NormalZombies);
 		BW_ConditionalLoadBots(BotFile, 'HaxBurning', BW_HaxBurningZombies, BW_BurningZombies);
 		BW_ConditionalLoadBots(BotFile, 'HaxVomiting', BW_HaxVomitingZombies, BW_VomitingZombies);
-		BW_ConditionalLoadBots(BotFile, 'HaxKamikaze', BW_HaxKamikazeZombies, BW_KamikazeZombies);		
+		BW_ConditionalLoadBots(BotFile, 'HaxKamikaze', BW_HaxKamikazeZombies, BW_KamikazeZombies);
 		BW_ConditionalLoadBots(BotFile, 'HaxParts', BW_HaxButcherPartZombies, BW_ButcherPartZombies);
 
 
@@ -327,27 +324,27 @@ begin
 		BW_ConditionalLoadTaunts(BotFile, 'HaxTauntsWin_Part', BW_HaxPartTauntsWin, BW_PartTauntsDmg);
 		BW_ConditionalLoadTaunts(BotFile, 'HaxTauntsSee_Part', BW_HaxPartTauntsSee, BW_PartTauntsDmg);
 
-    tmp := ['Now I will eat you!', 'Roar!', 'Fear me!', 'Grrhhr!', 'Arrggh!']; 
+    tmp := ['Now I will eat you!', 'Roar!', 'Fear me!', 'Grrhhr!', 'Arrggh!'];
 		BW_ConditionalLoadTaunts(BotFile, 'TauntsInfection_Player', BW_PlayerInfected, tmp);
-		
+
 		tmp := ['Rise again!','Rise, zombies!', 'Get up, minions!'];
     BW_ConditionalLoadTaunts(BotFile, 'TauntsRevive_Plague', BW_PlagueTauntsRevive, tmp);
-		
+
     tmp := ['Roar!'];
     BW_ConditionalLoadTaunts(BotFile, 'TauntsMadness_Butcher', BW_ButcherTauntsMadness, tmp);
 
     tmp := [];
     BW_ConditionalLoadTaunts(BotFile, 'TauntsTeleport_Priest', BW_PriestTauntsTeleport, tmp);
-		
+
 		tmp := ['Tick, tick, TICK!'];
     BW_ConditionalLoadTaunts(BotFile, 'TauntsExplode_TickingBomb', BW_TickingTauntsTauntsExplode, tmp);
-		
+
 		tmp := ['ALLAHU AKBAR!'];
     BW_ConditionalLoadTaunts(BotFile, 'TauntsExplodeClose_TickingBomb', BW_TickingTauntsExplodeClose, tmp);
-		
-		tmp := ['Bluhhhr!', 'Mlearhh!', 'Prhhh!', 'Ulhrr!', 'Blurhh!', 'Brrhhg', 'Arghhr!'];   
+
+		tmp := ['Bluhhhr!', 'Mlearhh!', 'Prhhh!', 'Ulhrr!', 'Blurhh!', 'Brrhhg', 'Arghhr!'];
 		BW_ConditionalLoadTaunts(BotFile, 'TauntsVomit_Vomiting', BW_VomitingTauntsVomit, tmp);
-		
+
 		tmp := ['You shall burn in hell!', 'Burn!', 'Die!!!'];
 		BW_ConditionalLoadTaunts(BotFile, 'TauntsPenta_Satan', BW_SatanTauntsPenta, tmp);
 
@@ -550,9 +547,23 @@ begin
 	if zombieRecord.CustomDefinitionIndex = -1 then
 	begin
 		if hax then
-			definition := BW_RanomBotDefinition(zombieRecord.Name, BW_HaxVomitingTauntsKill, BW_HaxVomitingTauntsDie, BW_HaxVomitingTauntsDmg, BW_HaxVomitingTauntsSee, BW_HaxVomitingTauntsWin)
+			definition := BW_RanomBotDefinition(
+				zombieRecord.Name,
+				BW_HaxVomitingTauntsKill,
+				BW_HaxVomitingTauntsDie,
+				BW_HaxVomitingTauntsDmg,
+				BW_HaxVomitingTauntsSee,
+				BW_HaxVomitingTauntsWin
+			)
 		else
-			definition := BW_RanomBotDefinition(zombieRecord.Name, BW_VomitingTauntsKill, BW_VomitingTauntsDie, BW_VomitingTauntsDmg, BW_VomitingTauntsSee, BW_VomitingTauntsWin);
+			definition := BW_RanomBotDefinition(
+				zombieRecord.Name,
+				BW_VomitingTauntsKill,
+				BW_VomitingTauntsDie,
+				BW_VomitingTauntsDmg,
+				BW_VomitingTauntsSee,
+				BW_VomitingTauntsWin
+			);
 	end
 	else
 		definition := BW_CustomZombies[zombieRecord.CustomDefinitionIndex];
@@ -771,7 +782,7 @@ begin
 		arrDead := BW_HaxNormalTauntsDie;
 		arrDmg := BW_HaxNormalTauntsDmg;
 		arrSee := BW_HaxNormalTauntsSee;
-		arrWin := BW_HaxNormalTauntsWin;    
+		arrWin := BW_HaxNormalTauntsWin;
 	end;
 	Result := TNewPlayer.Create;
 	Result.Name := Player.Name;
@@ -794,7 +805,7 @@ begin
 end;
 
 
-initialization 
+initialization
 	BW_LoadFile(BW_FILE_PATH);
 	BW_Reset(True);
 	BW_Reset(False);

@@ -2,9 +2,7 @@ unit ExceptionHandler;
 
 interface
 
-{$ifdef FPC}
-	uses Scriptcore;
-{$endif}
+uses Scriptcore;
 
 const EH_EXCEPTION_FILE_PATH = '~/exceptions.log';
 
@@ -14,7 +12,7 @@ implementation
 
 {$ifndef FPC}
 var EH_ExceptionFile: TStringList;
-  {$endif}
+{$endif}
 procedure EH_LogException(msg: string);
 begin
 	{$ifndef FPC}
@@ -32,11 +30,11 @@ begin
 	WriteLn('Unhandled exception occured:');
 	WriteLn(msg);
 	EH_LogException(msg);
-	Result := True;	
+	Result := True;
 end;
 
 initialization
-{$ifndef FPC}
+{$ifdef SCRIPT}
 if File.Exists(EH_EXCEPTION_FILE_PATH) then
 	EH_ExceptionFile := File.CreateStringListFromFile(EH_EXCEPTION_FILE_PATH)
 else

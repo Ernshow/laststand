@@ -2,16 +2,14 @@ unit Stacks;
 
 interface
 
-{$ifdef FPC}
 uses Scriptcore;
-{$endif}
 
 type
 	tStack8 = record
 		length: integer;
 		arr: array of byte;
 	end;
-	
+
 	tStack16 = record
 		length: integer;
 		arr: array of word;

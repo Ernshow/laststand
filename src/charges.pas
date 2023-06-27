@@ -2,16 +2,14 @@
 //  |    Charges    |
 //  * ------------- *
 
-// This is a part of {LS} Last Stand. 
+// This is a part of {LS} Last Stand.
 
 unit Charges;
 
 interface
 
 uses
-{$ifdef FPC}
 	Scriptcore,
-{$endif}
 	Ballistic,
 	Bigtext,
 	Constants,
@@ -28,7 +26,7 @@ uses
 
 const
 	MAX_CHARGES = 20;
-	
+
 type
 	tCharge = record
 		x, y: single;
@@ -40,7 +38,7 @@ type
 var
 	charge: array[0..MAX_CHARGES-1] of tCharge;
 	Charges_MaxID: integer;
-	
+
 function Charges_InGameInfo(p: integer): string;
 
 procedure Charges_TryPlace(ID: byte; chargeTime: integer; _remote: boolean);
@@ -102,7 +100,7 @@ begin
 					extend_array := true;
 				end;
 			end;
-			ang3 := ang3 + angle / 6; 
+			ang3 := ang3 + angle / 6;
 		end;
 		if extend_array then begin
 			element_used := true;
@@ -166,7 +164,7 @@ var i: byte;
 begin
 	// repeat two times (packetloss)
 	for i := 0 to 1 do begin
-		BigText_DrawMapX(WTL_CHARGES+CID, charge[CID].owner, '[' + IntToStr(CID+1) + ']', 99999999, col, 0.04, Trunc(charge[CID].X+CHAR_MARK_X_OFFSET), Trunc(charge[CID].Y));					
+		BigText_DrawMapX(WTL_CHARGES+CID, charge[CID].owner, '[' + IntToStr(CID+1) + ']', 99999999, col, 0.04, Trunc(charge[CID].X+CHAR_MARK_X_OFFSET), Trunc(charge[CID].Y));
 	end;
 end;
 
@@ -188,7 +186,7 @@ begin
 	Charges_Unmark(Result);
 	if s.Length > 0 then begin
 		Charges_Mark(s.arr[s.length-1], CHAR_NEXT_COL);
-	end;	
+	end;
 end;
 
 // Move the specified charge to the top of the detonation queue
@@ -218,7 +216,7 @@ end;
 
 // Find a charge at (X, Y) and select it (move to the top of the detonation queue)
 procedure Charges_SelectChargeAt(ID: integer; X, Y: single);
-var 
+var
 	i: integer;
 	choice: integer;
 	d, max: single;
@@ -271,7 +269,7 @@ begin
 										chargeTime := chargeTime - 2 else
 										chargeTime := chargeTime - 1;
 								end;
-								charge[found].timer := chargeTime;						
+								charge[found].timer := chargeTime;
 								charge[found].owner := ID;
 								player[ ID ].charges := player[ ID ].charges - 1;
 								if found > Charges_MaxID then Charges_MaxID := found;

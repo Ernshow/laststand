@@ -14,19 +14,18 @@ unit MapRecords;
 interface
 
 uses
-{$ifdef FPC}
-  Scriptcore,
-{$endif}
+	Scriptcore,
 	Constants,
 	Debug,
 	Globals,
 	LSPlayers,
 	Misc,
+	Prelude,
 	GameModes;
 
 const
 	INF_RECORD_POSITIONS = 3;
-	
+
 	IC_PATH = 'IC';
 	IC_MODULE_ENABLED = true;
 	IC_MODULE_PREFIX = 'LS';
@@ -40,12 +39,12 @@ type
 			Style: byte;
 		end;
 	end;
-		
+
 	tPlayerRecord = record
 		Points: integer;
 		Name: string;
 	end;
-	
+
 	tMapRecord = record
 		Line: array of string;
 		Path: String;
@@ -68,7 +67,7 @@ type
 var
 	MapRecord: tMapRecord;
 	IC: tICModule;
-	
+
 procedure MapRecord_ClearFile(Map: string);
 
 // creates an empty file for the map
@@ -165,7 +164,7 @@ var
 	i, x, k, max_i: smallint; h, n: byte; ignore: array of boolean;
 begin
 	if not MapRecord.BuffFile.Saved then begin // overwrite on hdd only if the  file has been modifed
-		//Debug(4, 'Saving record file for ' + MapRecord.BuffFile.MapName + '');
+		WriteDebug(4, 'Saving record file for ' + MapRecord.BuffFile.MapName);
 		max_i := GetArrayLength(MapRecord.BuffFile.Entries);
 		MapRecord.BuffFile.Fstr := '';
 		SetLength(ignore, max_i);
@@ -232,12 +231,24 @@ end;
 
 // indexes available for now: s: survival score line, i: infection score line
 procedure MapRecord_SaveElement(var Map: string; data: string; index: char; AppendIndex: boolean);
-var 
+var
 	i, l: smallint;
 	found: boolean;
 begin
+	WriteDebug(6,
+		'MapRecord_SaveElement(Map:'
+			+ Show(Map)
+			+ '; data:'
+			+ Show(data)
+			+ '; index:'
+			+ Show(index)
+			+ '; AppendIndex:'
+			+ Show(AppendIndex)
+			+ ')'
+		);
 	MapRecord_ReadFile(Map);
 	if not MapRecord.BuffFile.Loaded then begin
+		WriteDebug(6, 'MapRecord_SaveElement() -> Creating Map file: ' + Map);
 		MapRecord_Create(Map, false);
 	end;
 	l := GetArrayLength(MapRecord.BuffFile.Entries);
@@ -289,6 +300,7 @@ begin
 			2: index := 'v';
 			3: index := 'i';
 		end;
+		// Reset MaprRecord Data
 		SetLength(MapRecord.Line, 0);
 		MapRecord.Survival.Value := 0;
 		MapRecord.TopPlayers.Loaded := false;
@@ -308,7 +320,7 @@ begin
 					MapRecord.Line[0] := 'Survival high score - ' + Map + ' (' + arr[1] + ')';
 					MapRecord.Line[1] := ' Score: ' + arr[0];// + '  (in ' + iif(arr[2] = '1', 'classic', 'hardcore') + ' mode)';
 					MapRecord.Line[2] := ' Zombies Killed: ' + arr[3] + ',  Civilians alive: ' + arr[4];
-					MapRecord.Line[3] := ' Waves survived: ' + arr[5] + ',  Time Survived: ' + IntToStr(t div 60) + ':' + iif(t mod 60 <= 9,'0','') + IntToStr(t mod 60); 
+					MapRecord.Line[3] := ' Waves survived: ' + arr[5] + ',  Time Survived: ' + IntToStr(t div 60) + ':' + iif(t mod 60 <= 9,'0','') + IntToStr(t mod 60);
 					MapRecord.Line[4] := ' Most Kills by ' + arr[8] + ': ' + arr[7];
 					MapRecord.Line[5] := ' Team: ';
 					players := Explode2(arr[9], chr(172), false);
@@ -329,7 +341,7 @@ begin
 					end;
 				end;
 				2, 3: begin
-					for x := 0 to 1 do 
+					for x := 0 to 1 do
 						for i := 0 to INF_RECORD_POSITIONS-1 do begin
 							MapRecord.TopPlayers.Team[x][i].Points := 0;
 							MapRecord.TopPlayers.Team[x][i].Name := '';
@@ -379,7 +391,7 @@ begin
 								Line := Line + 1;
 							end;
 						end;
-						
+
 					end;
 					MapRecord.TopPlayers.Loaded := true;
 				end;
@@ -523,7 +535,7 @@ begin
 					players[x][i].Name := GetPiece(team[x][i], chr(175), 1);
 					for j := 0 to i do begin // remove player if his name already exists in the array (result of binding two records)
 						if i <> j then begin
-							if players[x][i].Name = players[x][j].Name then begin	
+							if players[x][i].Name = players[x][j].Name then begin
 								if players[x][i].Points > players[x][j].Points then players[x][j].Points := 0
 								else players[x][i].Points := 0;
 								break;
@@ -569,8 +581,8 @@ procedure IC_OnDataReceived(Packet: string; ServID: shortint);
 var str, hash, data: string; i: smallint; P, Q: integer; arr: array of string; index: char;
 {$endif}
 begin
-  {$ifndef FPC}
-  case GetPiece(Packet, ' ', 0) of
+	{$ifndef FPC}
+	case GetPiece(Packet, ' ', 0) of
 		// retireving a hash of the entire mapfile
 		'h': begin // <mapname> <separator> <hash>
 			Delete(Packet, 1, 2);
@@ -583,7 +595,7 @@ begin
 				end;
 			end;
 		end;
-		
+
 		'H': begin // if hash of the specific record entries received
 			Delete(Packet, 1, 2);
 			arr := Explode2(Packet, PACKET_SEPARATOR, false);
@@ -684,21 +696,21 @@ begin
 				MapRecord_SaveFile();
 			end;
 		end;
-		
+
 		'd': begin
 			Delete(Packet, 1, 2);
 			str := GetPiece(Packet, PACKET_SEPARATOR, 0); // get map
 			if str <> nil then
 				MapRecord_Delete(str);
 		end;
-		
+
 		'm': begin
 			Delete(Packet, 1, 2);
 			arr := Explode2(Packet, PACKET_SEPARATOR, false);
 			WriteConsole(0, 'High score for ' + arr[0] + ' has been beaten on server #' + IntToStr(ServID) + '! (Wave: ' + arr[1] + ', Points: ' + arr[2] + ')', PINK);
 		end;
 	end;
-  {$endif}
+	{$endif}
 end;
 
 // event, called when disconnected from IC relay
@@ -728,7 +740,7 @@ begin
 	except
 		WriteDebug(10, 'Invalid IC update packet');
 	end;
-	
+
 	// after first connection, compare records for current map
 	if not IC.ReceivedResponse then begin
 		for i := 1 to Length(IC.Serv) - 1 do
@@ -745,56 +757,88 @@ end;
 procedure MapScore_Display(ID: byte);
 var i, l: shortint;
 begin
-	if ((Modes.CurrentMode = 1) and (MapRecord.Survival.Value > 0)) or (((Modes.CurrentMode = 3) or (Modes.CurrentMode = 2)) and (MapRecord.TopPlayers.Loaded)) then begin
+	// WriteDebug(6,
+	// 	'MapScore_Display(' + IntToStr(ID)
+	// 		+ ') -> Current Mode: '
+	// 		+ IntToStr(Modes.CurrentMode)
+	// );
+	// WriteDebug(6,
+	// 	'MapRecord.TopPlayers.Loaded = '
+	// 		+ Show(MapRecord.TopPlayers.Loaded)
+	// 		+ ' -> Current Mode: '
+	// 		+ IntToStr(Modes.CurrentMode)
+	// );
+	if ((Modes.CurrentMode = 1) and (MapRecord.Survival.Value > 0))
+			or (((Modes.CurrentMode = 3) or (Modes.CurrentMode = 2)) and (MapRecord.TopPlayers.Loaded))
+	then begin
 		l := GetArrayLength(MapRecord.Line) - 1;
 		for i := 0 to l do begin
-			WriteConsole(ID, MapRecord.Line[i], PINK);
+			if ID > 0 then
+				Players[ID].WriteConsole(MapRecord.Line[i], PINK)
+			else
+				Players.WriteConsole(MapRecord.Line[i], PINK);
+
 		end;
 	end else
-		WriteConsole(0, 'No record for this map yet', PINK);
+		if ID > 0 then
+			Players[ID].WriteConsole('No record for this map yet', PINK)
+		else
+			Players.WriteConsole('No record for this map yet', PINK);
 end;
 
 procedure MapScore_UpdateRecord(Score: integer; Send: boolean);
 var i, killer, kills: integer; PlayerList, kn: string;
 begin
 	//value-date-zombies-civs-waves-time-mostkills-killer-playerlist
+	WriteDebug(6, 'MapScore_UpdateRecord(Score:' + Show(Score) + '; Send:' + Show(Send) + ')');
 	for i := 1 to MAX_UNITS do
 		if players[i].Active then
-		if player[i].Participant = 1 then
-		if player[i].Waves >= NumberOfWave div 4 then
-			PlayerList := PlayerList + Players[i].Name + chr(172);
-	
+			if player[i].Participant = 1 then
+				if player[i].Waves >= NumberOfWave div 4 then
+					PlayerList := PlayerList + Players[i].Name + chr(172);
+
 	for i := 0 to Length(MapRecord.Survival.GonePlayers) - 1 do
 		if MapRecord.Survival.GonePlayers[i].Points >= NumberOfWave div 4 then
-		if MapRecord.Survival.GonePlayers[i].Name <> '' then
-			PlayerList := PlayerList + MapRecord.Survival.GonePlayers[i].Name + chr(172);
-	
+			if MapRecord.Survival.GonePlayers[i].Name <> '' then
+				PlayerList :=
+					PlayerList + MapRecord.Survival.GonePlayers[i].Name + chr(172);
+
 	killer := Players_MostKills();
 	if killer > 0 then begin
 		kills := player[killer].kills;
 		kn := Players[Killer].Name;
 	end else
 		kn := '---';
-		
-	MapRecord_SaveElement(CurrentMap2, 
-		IntToStr(Score) + chr(182) +
-		FormatDate('h:nn, d.m.yyyy') + chr(182) +
-		'2' + chr(182) +
-		IntToStr(ZombiesKilled) + chr(182) +
-		IntToStr(Civilians) + chr(182) +
-		IntToStr(NumberOfWave) + chr(182) +
-		IntToStr((Timer.Value div 60)) + chr(182) +
-		IntToStr(kills) + chr(182) +
-		kn + chr(182) + PlayerList,
-	's', true);
+
+	MapRecord_SaveElement(
+		CurrentMap2,
+		IntToStr(Score) + chr(182)
+			+ FormatDate('h:nn, d.m.yyyy') + chr(182)
+			+ '2' + chr(182)
+			+ IntToStr(ZombiesKilled) + chr(182)
+			+ IntToStr(Civilians) + chr(182)
+			+ IntToStr(NumberOfWave) + chr(182)
+			+ IntToStr((Timer.Value div 60)) + chr(182)
+			+ IntToStr(kills) + chr(182)
+			+ kn + chr(182)
+			+ PlayerList,
+		's', true
+	);
 	MapScore_LoadMapRecord(CurrentMap2);
-	MapRecord_SaveFile(); // saves new/updated record file on HDD
+	// saves new/updated record file on HDD
+	MapRecord_SaveFile();
 	if Send then
 		CompareRecord_IC(CurrentMap2, 's', 0);
 end;
 
-procedure MapScore_UpdateTopPlayers(index: char); // index v/i - versus/infeciton
-var i, j: smallint; x, n: byte; value, h, diff: integer; change: boolean; str: string;
+// index v/i - versus/infeciton
+procedure MapScore_UpdateTopPlayers(index: char);
+var
+	i, j: smallint;
+	x, n: byte;
+	value, h, diff: integer;
+	change: boolean;
+	str: string;
 begin
 	for x := 0 to 1 do begin // both teams, survivors, infection
 		for i := 1 to MaxID do begin
@@ -811,9 +855,12 @@ begin
 				h := 0;
 				n := 255;
 				str := Players[i].Name;
-				for j := 0 to INF_RECORD_POSITIONS - 1 do begin // choose the lowest ones from record to replace if players have higher scores
-				//	writeconsole(0, 'asd'+IntToStr(MapRecord.TopPlayers.Team[x][j].Points), red);
-					if MapRecord.TopPlayers.Team[x][j].Name = str then begin // if such player already exists in record then place him on the same position
+
+				// choose the lowest ones from record to replace if players have higher scores
+				for j := 0 to INF_RECORD_POSITIONS - 1 do begin
+					// writeconsole(0, 'asd'+IntToStr(MapRecord.TopPlayers.Team[x][j].Points), red);
+					// if such player already exists in record then place him on the same position
+					if MapRecord.TopPlayers.Team[x][j].Name = str then begin
 						if value > MapRecord.TopPlayers.Team[x][j].Points then begin
 							n := j;
 							break;

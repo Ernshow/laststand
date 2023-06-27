@@ -3,9 +3,8 @@ unit configs;
 interface
 
 uses
-{$ifdef FPC}
 	Scriptcore,
-{$endif}
+	Ballistic,
 	Constants,
 	Debug,
 	INI,
@@ -20,7 +19,7 @@ const
 	MAXPLAYERS_VERSUS =   10;
 	MAXPLAYERS_INFECTION = 6;
 	MAXPLAYERS_BUTCHERY  = 6;
-	
+
 	WEAPONSINI = 'weapons_realistic';//default, path to used weapons.ini, if not set in config
 	V_WEAPONSINI = 'weapons_veteran';
 
@@ -42,24 +41,25 @@ type
 	tLSMap = record
 		CurrentNum, DifficultyPercent, DeathTimer: word;
 		CivsName, StartText, EndText: string;
+		Gravity: Single;
 		Settings: record
 			Path: string;
 			Ini: tINI;
 			Loaded: boolean;
 		end;
 	end;
-	
+
 	tConfig = record
 		Mode: array [1..MAX_MODES] of record
 			WeaponPath: string;
 			Maxplayers: byte;
 			Enabled, WeaponSys: boolean;
-		end;	
+		end;
 		ForceMode: boolean;
 		DefaultGameMode: byte;
 		Loaded: boolean;
 	end;
-	
+
 var
 	News: tNews;
 	LSMap: tLSMap;
@@ -76,23 +76,24 @@ const DEFAULT_END_TEXT = 'GAME OVER';
 procedure Config_ApplyMapSettings(Map: string);
 var str: string; changed, FoundKey, enabled: boolean;
 begin
-	
+
 	if not LSMap.Settings.Loaded then begin
 		LSMap.DeathTimer := DEATH_TIMER;
 		LSMap.CivsName := 'Civilians';
 		LSMap.StartText := '';
 		LSMap.EndText := DEFAULT_END_TEXT;
 		LSMap.DifficultyPercent := 100;
+		LSMap.Gravity := 0.06;
 		exit;
 	end;
-	
+
 	str := INI_Get(LSMap.Settings.Ini, Game.CurrentMap, 'Enabled', '', FoundKey);
 	if str <> '' then begin
 		enabled := str = '1';
 	end else if not FoundKey then begin
 		INI_Set(LSMap.Settings.Ini, Game.CurrentMap, 'Enabled', '0', changed);
 	end;
-	
+
 	LSMap.DeathTimer := DEATH_TIMER;
 	str := INI_Get(LSMap.Settings.Ini, Game.CurrentMap, 'DeathTimer', '', FoundKey);
 	if str <> '' then begin
@@ -104,7 +105,7 @@ begin
 	end else if not FoundKey then begin
 		INI_Set(LSMap.Settings.Ini, Game.CurrentMap, 'DeathTimer', '', changed);
 	end;
-	
+
 	LSMap.CivsName := 'Civilians';
 	str := INI_Get(LSMap.Settings.Ini, Game.CurrentMap, 'CivsName', '', FoundKey);
 	if str <> '' then begin
@@ -113,7 +114,7 @@ begin
 	end else if not FoundKey then begin
 		INI_Set(LSMap.Settings.Ini, Game.CurrentMap, 'CivsName', '', changed);
 	end;
-	
+
 	LSMap.DifficultyPercent := 100;
 	str := INI_Get(LSMap.Settings.Ini, Game.CurrentMap, 'Difficulty%', '', FoundKey);
 	if str <> '' then begin
@@ -125,7 +126,7 @@ begin
 	end else if not FoundKey then begin
 		INI_Set(LSMap.Settings.Ini, Game.CurrentMap, 'Difficulty%', '', changed);
 	end;
-	
+
 	LSMap.StartText := '';
 	str := INI_Get(LSMap.Settings.Ini, Game.CurrentMap, 'StartText', '', FoundKey);
 	if str <> '' then begin
@@ -134,7 +135,20 @@ begin
 	end else if not FoundKey then begin
 		INI_Set(LSMap.Settings.Ini, Game.CurrentMap, 'StartText', '', changed);
 	end;
-	
+
+	LSMap.Gravity := 0.06;
+	str := INI_Get(LSMap.Settings.Ini, Game.CurrentMap, 'Gravity', '100', FoundKey);
+	if str <> '' then begin
+		if enabled then
+			LSMap.Gravity := 0.0006 * StrToFloat(str);
+			Game.Gravity := LSMap.Gravity;
+			ServerModifier('Gravity', LSMap.Gravity);
+			WriteLn('MAP GRAVITY = ' + FloatToStr(Game.Gravity));
+	end else if not FoundKey then begin
+		WriteLn('Writing INI Gravity = ' + FloatToStr(Game.Gravity));
+		INI_Set(LSMap.Settings.Ini, Game.CurrentMap, 'Gravity', '100', changed);
+	end;
+
 	str := INI_Get(LSMap.Settings.Ini, Game.CurrentMap, 'EndText', '', FoundKey);
 	if str <> '' then begin
 		if enabled then begin
@@ -147,7 +161,7 @@ begin
 			INI_Set(LSMap.Settings.Ini, Game.CurrentMap, 'EndText', '', changed);
 		end;
 	end;
-	
+
 	if changed then
 		INI_Save(LSMap.Settings.Ini, LSMap.Settings.Path);
 end;
@@ -164,7 +178,7 @@ begin
 		INI_Clear(LSMap.Settings.Ini);
 		LSMap.Settings.Loaded := INI_Load(LSMap.Settings.Ini, LSMap.Settings.Path);
 	end;
-	
+
 	ConfigPath := Script.Dir + 'config.ini';
 	Config.Mode[1].Maxplayers := MAXPLAYERS_SURVIVAL;
 	Config.Mode[2].Maxplayers := MAXPLAYERS_VETERAN;
@@ -188,7 +202,7 @@ begin
 	Config.Mode[5].WeaponPath := WEAPONSINI;
 	Config.ForceMode := false;
 	Config.DefaultGameMode := 1;
-	
+
 	if FileExists(ConfigPath) then begin
 		if INI_Load(ini, ConfigPath) then begin
 			try
@@ -216,7 +230,7 @@ begin
 			except
 				INI_Set(ini, 'MAXPLAYERS', 'Butchery', IntToStr(MAXPLAYERS_BUTCHERY), changed);
 			end;
-			
+
 			Config.Mode[1].Enabled := INI_Get(ini, 'MODE_ENABLED', 'SurvivalHard', '1', b) = '1';
 			if not b then INI_Set(ini, 'MODE_ENABLED', 'SurvivalHard', '1', changed);
 			Config.Mode[2].Enabled := INI_Get(ini, 'MODE_ENABLED', 'Veteran', '1', b) = '1';
@@ -227,7 +241,7 @@ begin
 			if not b then INI_Set(ini, 'MODE_ENABLED', 'Infection', '1', changed);
 			//Config.Mode[5].Enabled := INI_Get(ini, 'MODE_ENABLED', 'Butchery', '1', b) = '1';
 			//if not b then INI_Set(ini, 'MODE_ENABLED', 'Butchery', '1', changed);
-			
+
 			Config.Mode[1].WeaponSys := INI_Get(ini, 'WEAPON_SYSTEM', 'SurvivalHard', '0', b) = '1';
 			if not b then INI_Set(ini, 'WEAPON_SYSTEM', 'SurvivalHard', '0', changed);
 			Config.Mode[2].WeaponSys := INI_Get(ini, 'WEAPON_SYSTEM', 'Veteran', '1', b) = '1';
@@ -236,7 +250,7 @@ begin
 			if not b then INI_Set(ini, 'WEAPON_SYSTEM', 'Versus', '0', changed);
 			Config.Mode[4].WeaponSys := INI_Get(ini, 'WEAPON_SYSTEM', 'Infection', '0', b) = '1';
 			if not b then INI_Set(ini, 'WEAPON_SYSTEM', 'Infection', '0', changed);
-			
+
 			Config.Mode[1].WeaponPath := INI_Get(ini, 'WEAPON_PATH', 'SurvivalHard', WEAPONSINI, b);
 			if not b then INI_Set(ini, 'WEAPON_PATH', 'SurvivalHard', WEAPONSINI, changed);
 			Config.Mode[2].WeaponPath := INI_Get(ini, 'WEAPON_PATH', 'Veteran', V_WEAPONSINI, b);
@@ -263,7 +277,7 @@ begin
 			if not b then begin
 				INI_Set(ini, 'GENERAL', 'ForceDefaultMode', '0', changed);
 			end;
-			
+
 			if changed then INI_Save(ini, ConfigPath);
 		end else begin
 			CreateFile := true;
@@ -271,7 +285,7 @@ begin
 	end else begin
 		CreateFile := true;
 	end;
-	
+
 	if CreateFile then begin
 		WriteFile(ConfigPath,
 			'[GENERAL]' + #13#10 +
@@ -300,15 +314,15 @@ begin
 		);
 		CreateFile := false;
 	end;
-	
+
 	Config.Loaded := true;
 end;
-	
+
 procedure Config_LoadNews();
 var
 	CreateFile, b: boolean;
 	ini: tINI;
-	n: smallint; 
+	n: smallint;
 	Text: string;
 begin
 	News.FilePath := Script.Dir + 'news.ini';
@@ -356,7 +370,7 @@ begin
 		CreateFile := true;
 		News.Active := false;
 	end;
-	
+
 	if CreateFile then
 		WriteFile(News.FilePath,
 			'[NEWS]' + #13#10 +

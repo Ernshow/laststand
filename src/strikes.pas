@@ -9,9 +9,7 @@ unit Strikes;
 interface
 
 uses
-{$ifdef FPC}
   Scriptcore,
-{$endif}
 	Bigtext,
 	Constants,
 	Debug,
@@ -31,7 +29,7 @@ type
 		Owner: byte;
 		Active: array[0..2] of boolean;
 	end;
-	
+
 	tStrike = record
 		Owner, Style, AmmoType, Target, AimTimer: byte;
 		Timer, Timer2, CoolDown, HeliFireN, SwitchedTargetCooldown: smallint;
@@ -43,7 +41,7 @@ type
 var
 	Strike: tStrike;
 	Marker: tMarker;
-	
+
 procedure Strike_Reset();
 
 procedure Strike_Process(MainCall: boolean); // 1hz, 15hz compatibile
@@ -126,7 +124,7 @@ begin
 				Strike.Timer := strike.Timer - 1;
 			end;
 		end else begin // helicopter strike
-					
+
 			if MainCall then begin // 1hz
 				if Strike.Timer = HELITIME then	begin
 					WriteConsole( 0, 'Helicopter strike incoming in ' + IntToStr(HELITIME) + ' seconds!', GREEN);
@@ -199,7 +197,7 @@ begin
 				end;
 				Strike.Timer := strike.Timer - 1;
 			end; // <-/main call
-	
+
 			if Strike.Target > 0 then begin
 				if Strike.AmmoType = 1 then begin // Gatling
 					if not Players[Strike.Target].Alive then begin
@@ -215,7 +213,7 @@ begin
 							Strike.CurrentAngle := BallisticAimX(Strike.X2, Strike.Y2-100, 30, Players[Strike.Target], InRange);
 						end else
 							Strike.AimTimer := Strike.AimTimer - 1;
-						
+
 						if Strike.CurrentAngle < 0.0 then Strike.CurrentAngle := Strike.CurrentAngle + ANG_2PI;
 						// smooth fire angle progression
 						if Strike.LastAngle = 0 then
@@ -238,7 +236,7 @@ begin
 						Strike.CurrentAngle := Strike.LastAngle + Strike.LastDeltaAngle*DeltaFactor + DeltaAngle*(1.0-DeltaFactor);
 						Strike.LastAngle := Strike.CurrentAngle;
 						Strike.LastDeltaAngle := DeltaAngle;
-						
+
 						if Strike.Recoil < 1.0 then begin
 							Strike.Recoil := Strike.Recoil + 0.08;
 							if Strike.Recoil > 1.0 then Strike.Recoil := 1.0;

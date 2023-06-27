@@ -3,9 +3,7 @@ unit TaskMedic;
 interface
 
 uses
-{$ifdef FPC}
 	Scriptcore,
-{$endif}
 	BaseWeapons,
 	BigText,
 	Constants,

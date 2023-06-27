@@ -14,9 +14,7 @@ unit AZSS;
 interface
 
 uses
-{$ifdef FPC}
 	Scriptcore,
-{$endif}
 	Constants,
 	Debug,
   Globals,
@@ -37,12 +35,12 @@ const
 	AZSS_POINT_R = 200.0;
 	AZSS_REGRESSION_FACTOR = 1.0;
 	AZSS_SQR_POINT_R = AZSS_POINT_R * AZSS_POINT_R;
-	
+
 	//For the Veteran mode
 	AZSS_PROGRESSION_FACTOR = 1.2;
 	AZSS_PROGRESSION_FACTOR_PER = 0.5;
-	
-	
+
+
 	V_AZSS_POINT_READY_THRESHOLD = 5;
 	V_AZSS_SPAWNS_READY_THRESHOLD = 4;
 
@@ -68,7 +66,7 @@ type
 			prevX, prevY: single;
 		end;
 	end;
-	
+
 var
 	AZSS: tAdvancedZombieSpawnSystem;
 	AliveSurvivors: tStack8;
@@ -278,7 +276,7 @@ begin
 		d := d + 1.0;
 		GetPlayerXY(AliveSurvivors.arr[i], X, Y);
 		AZSS.TmpBaseX := AZSS.TmpBaseX + X;
-		AZSS.TmpBaseY := AZSS.TmpBaseY + Y;	
+		AZSS.TmpBaseY := AZSS.TmpBaseY + Y;
 	end;
 	AZSS.TmpBaseX := AZSS.TmpBaseX / d;
 	AZSS.TmpBaseY := AZSS.TmpBaseY / d;
@@ -289,7 +287,7 @@ begin
 		d := Distance(X, Y, AZSS.TmpBaseX, AZSS.TmpBaseY);
 		if d > AZSS.TmpBaseR then AZSS.TmpBaseR := d;
 	end;
-	
+
 	// we need to decide how much time zombies need to get to the temporary surv base
 	// later it will be used to eliminate potential spawnpoints more distant
 	// we wouldn't like zombies to spawn behind surivors line
@@ -358,7 +356,7 @@ begin
 		if AZSS.Point[j].AvgZombieTime <= AZSS.UpperTimeLimit then begin // allow only points "before" the tmp surv base
 			// find two points close to this time, one on the left, on on the right
 			if (j=0) or (SqrDist(AZSS.TmpBaseX, AZSS.TmpBaseY, AZSS.Point[j].x, AZSS.Point[j].y) > AZSS.TmpBaseR*AZSS.TmpBaseR) then begin // point cannot be in range of surv tmp base
-				for i := 0 to AliveSurvivors.length-1 do begin // (*1) look for close survivors 
+				for i := 0 to AliveSurvivors.length-1 do begin // (*1) look for close survivors
 					GetPlayerXY(AliveSurvivors.arr[i], x, y);
 					if SqrDist(x, y, AZSS.Point[j].x, AZSS.Point[j].y) < 640000 then // 800^2
 						break;
@@ -373,7 +371,7 @@ begin
 							diff := AZSS.Point[k].AvgZombieTime - AZSS.Point[j].AvgZombieTime;
 							numback := front * AZSS_TMP_SPAWN_NUM div diff;
 							numfront := AZSS_TMP_SPAWN_NUM - numback;
-							
+
 							if numfront > 0 then begin // check if the front point is not close to survivors, for now only backpoint was checked (ad.1)
 								for i := 0 to AliveSurvivors.length-1 do begin // look for close survivors
 									GetPlayerXY(AliveSurvivors.arr[i], x, y);
@@ -408,7 +406,7 @@ begin
 			end;
 		end else break; // if came out of allowed range
 	end;
-	
+
 	if last_ok >= 0 then begin // since we reached this place (ad.3), no two neighboring spawnpoints were found. If there is a spawnpoint which could be used though (ad.2), set it.
 		AZSS_ActivateSpawn(AZSS.TmpPoint.arr[0], last_ok);
 		if AZSS.Debug then WriteLn('<AZSS> spawn - time: ' + IntToStr(t2s(time)) + '/' + IntToStr(t2s(AZSS.UpperTimeLimit)) + ', ' + IntToStr(t2s(AZSS.Point[last_ok].AvgZombieTime)));
@@ -419,7 +417,7 @@ begin
 		if AZSS.Debug then WriteLn('<AZSS> spawn - time: ' + IntToStr(t2s(time)) + ', none');
 		exit; // <-
 	end;
-	
+
 	for n := n to AZSS_TMP_SPAWN_NUM-1 do // if didnt find a position for some of the temp spawns, disable them
 		SetSpawnStat(AZSS.TmpPoint.arr[n], 'ACTIVE', false);
 end;
@@ -461,7 +459,7 @@ begin
 	if AZSS.Active then begin
 		AZSS.Progression := AZSS.Progression / 2;
 		if AZSS.InProgress then
-		begin				
+		begin
 			if Spawn.Active then begin
 				AZSS_GetBase();
 				AZSS_SetSpawn(Round(AZSS.Progression*AZSS.UpperTimeLimit));
@@ -484,7 +482,7 @@ begin
 		AZSS.TmpZombHpFactor := (1.0 + AZSS.TmpZombHpFactor) / 2.0; // tend to 1
 	end else begin
 		RefreshAliveSurvList(); // we will use a quick list of alive survivors in functions below, perfomance reasons
-		
+
 		// in this state, bots are being observed, potential spawn points are found
 		if AZSS.Observation then begin
 			for h := 1 to AZSS_MAXOBSERVED do begin
@@ -517,23 +515,23 @@ begin
 										break;
 									end;
 							if j >= AliveSurvivors.length then begin
-								k := -1;	
+								k := -1;
 								for j := 1 to AZSS.PointNum do
 									if AZSS.Point[j].Active then begin
 										if not AZSS.ObservedZombie[h].Point[j] then
 											if SqrDist(x, y, AZSS.Point[j].x, AZSS.Point[j].y) < AZSS_SQR_POINT_R then begin
 												t := Timer.Value-player[i].RespawnTime;
-												AZSS.ObservedZombie[h].Point[j] := true;	
+												AZSS.ObservedZombie[h].Point[j] := true;
 												if (t div 2 >= AZSS.Point[j].AvgZombieTime) then
 													if (AZSS.Point[j].AvgZombieTime > 600) and (AZSS.Point[j].ZombieNum >= 10) then
 														break; // <- if the zombie time is much higher (twice) than average time at this point, skip it
-												// almost-arithmetic mean, older values become less significant in time	
+												// almost-arithmetic mean, older values become less significant in time
 												p := Math.Pow(AZSS.Point[j].ZombieNum, 0.8);
 												// Timer.Value-player[i].RespawnTime represents time, in which zombie reached this point
 												AZSS.Point[j].AvgZombieTime := Trunc((p*AZSS.Point[j].AvgZombieTime + t) / (p + 1.0));
 												AZSS.Point[j].ZombieNum := AZSS.Point[j].ZombieNum + 1;
-												if AZSS.Debug then 
-													if (AZSS.Point[j].ZombieNum >= AZSS.PointReady_THRESHOLD) then 
+												if AZSS.Debug then
+													if (AZSS.Point[j].ZombieNum >= AZSS.PointReady_THRESHOLD) then
 														WriteLn('<AZSS> point ready ' + inttostr(j) + '-> zn: '+ inttostr(AZSS.Point[j].ZombieNum) + ', t: ' + IntToStr(t2s(AZSS.Point[j].AvgZombieTime)));
 												AZSS.Point[j].LastVisit := Timer.Value;
 												RefreshSpawnList := true;
@@ -546,7 +544,7 @@ begin
 									if j <= AZSS_MAXPOINTS then begin // create a new one
 										if PointNotInPoly(x, y-10.0, true, false, false) then
 											if Players_OnGround(i, true, 40) <> 0 then begin
-												if j > AZSS.PointNum then AZSS.PointNum := j;	
+												if j > AZSS.PointNum then AZSS.PointNum := j;
 												if AZSS.Debug then WriteLn('<AZSS> new ' + inttostr(j) + '/' + inttostr(AZSS.PointNum));
 												AZSS.Point[j].Active := true;
 												AZSS.Point[j].AvgZombieTime := Timer.Value-player[i].RespawnTime;
@@ -565,7 +563,7 @@ begin
 			if (observed < AZSS_MAXOBSERVED) and (observed < AliveZombiesInGame) then
 				for h := 1 to AZSS_MAXOBSERVED do
 					if AZSS.ObservedZombie[h].ID = 0 then AZSS_SelectZombie(h);
-				
+
 			if Timer.Value >= AZSS.LastSpawnReview + 7200 then begin // from time to time (each 2 mins), clear loop though all points, and if some seem unused anymore (for 5 mins), get rid of them
 				for j := 1 to AZSS.PointNum do
 					if AZSS.Point[j].Active then begin
@@ -582,7 +580,7 @@ begin
 			//end;
 		//end else begin // if observation is currently off
 		end;
-			
+
 		// progressive spawn controller
 		if AZSS.InProgress then begin
 			if SurvPwnMeter >= 0.8 then begin
@@ -595,30 +593,30 @@ begin
 			end else if AZSS.ActivationTimer > 0 then begin
 				AZSS.ActivationTimer := AZSS.ActivationTimer - 1;
 			end;
-			
+
 			if Spawn.Active then
 				// increment progression factor
 				if AZSS.HighProgress then
 					AZSS.Progression := AZSS.Progression + (0.012 + 0.001 * NumberOfWave - SurvPwnMeter / 100.0) * (AZSS_PROGRESSION_FACTOR + AZSS_PROGRESSION_FACTOR_PER * AliveSurvivors.length)
 				else
 					AZSS.Progression := AZSS.Progression + (0.012 + 0.001 * NumberOfWave - SurvPwnMeter / 100.0);
-				
+
 				// decrement if survivors are being damaged
-			
+
 			if SurvPwnMeter > AvgSurvPwnMeter then
 				AZSS.Progression := AZSS.Progression - AZSS_REGRESSION_FACTOR*(SurvPwnMeter-AvgSurvPwnMeter);
 			// make sure value is in range 0...1
 			if AZSS.Progression < 0.0 then AZSS.Progression := 0.0 else
 			if AZSS.Progression > 1.0 then AZSS.Progression := 1.0;
-			
+
 			if (AZSS.Observation) and (RefreshSpawnList) then
 				AZSS_CreateSpawnList();
-			
+
 			if Spawn.Active then begin
 				AZSS_GetBase();
 				AZSS_SetSpawn(Round(AZSS.Progression*AZSS.UpperTimeLimit));
 			end;
-				
+
 			// calculate progresssion meter now
 			if AZSS.Progression >= AZSS.ProgressionMeter then begin
 				// tending to current progression
@@ -631,21 +629,21 @@ begin
 				// tending to current progression, but with weigthed rate by zombies num in game
 				AZSS.ProgressionMeter := AZSS.ProgressionMeter*x + AZSS.Progression*(1.0-x);
 			end;
-			
+
 			// the point of AZSS is not to increase difficulty significantly, just to make the game more dynamic
 			// if survivors are being flooded with zombies because of AZSS progression, weaken the zombies a bit
 			AZSS.TmpZombHpFactor := 1.0-Sqr(AZSS.ProgressionMeter * SurvPwnMeter) - AvgSurvPwnMeter / 3.0 - AZSS.ProgressionMeter*AZSS.ProgressionMeter / 6.0;
 			if AZSS.TmpZombHpFactor < 0.3 then AZSS.TmpZombHpFactor := 0.3;
-			
+
 			if AZSS.Debug then WriteLn('<AZSS> SPM: ' + IntToStr(Round(SurvPwnMeter*100.0)) + '%, ASPM: ' + IntToStr(Round(AvgSurvPwnMeter*100.0)) + '%, PROGRESS: ' + IntToStr(Round(AZSS.Progression*100.0)) + '(' + IntToStr(Round(AZSS.ProgressionMeter*100.0)) + ')%, ZHPF: ' + IntToStr(Round(AZSS.TmpZombHpFactor*100.0)) + '%');
-		
+
 		end else begin
 			if SurvPwnMeter < 0.01 then begin // leaning towards activation
 				if AZSS.ActivationTimer < 10 then begin // need 15 secs to fully activate
 					AZSS.ActivationTimer := AZSS.ActivationTimer + 2;
 				end else begin
 					AZSS_GetReadySpawnsNum(AZSS_POINT_READY_THRESHOLD);
-					if (AZSS.ReadySpawnsNum >= AZSS.ReadySpawnsNum_THRESHOLD) then				
+					if (AZSS.ReadySpawnsNum >= AZSS.ReadySpawnsNum_THRESHOLD) then
 						AZSS_SetProgression(true);
 				end;
 			end	else // leaning towards deactivation
@@ -716,7 +714,7 @@ begin
 			if d > AZSS.BaseR then AZSS.BaseR := d;
 		end;
 	if AZSS.Debug then WriteLn('<AZSS> Base: R = ' + IntToStr(Trunc(AZSS.BaseR)) + ', X = ' + IntToStr(Trunc(AZSS.BaseX)) + ', Y = ' + IntToStr(Trunc(AZSS.BaseY)));
-		
+
 	// we got that stuff loaded now, let's check if the bravo base isn't mixed with alpha base
 	// some maps are built this way, our system would get confused there a bit, so we just disable it.
 	for i:=1 to MAX_SPAWNS do
@@ -726,7 +724,7 @@ begin
 				exit;
 			end;
 		end;
-		
+
 	// find some unused spawns, we will use them as temporary spawns for zombies
 	for i:=MAX_SPAWNS downto 1 do
 		if Map.Spawns[i].Active = false then begin
@@ -735,7 +733,7 @@ begin
 			if n >= 2 then break;
 			n := n + 1;
 		end;
-	
+
 	if n <= 1 then begin
 		stack8_push(AZSS.TmpPoint, 222);
 		stack8_push(AZSS.TmpPoint, 223);

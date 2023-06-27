@@ -11,9 +11,8 @@ interface
 
 {$ifdef FPC}
 uses
-   Scriptcore;
+  Scriptcore;
 {$endif}
-
 	
 type
 	

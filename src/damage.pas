@@ -11,9 +11,7 @@ unit Damage;
 interface
 
 uses
-{$ifdef FPC}
   Scriptcore,
-{$endif}
   LSPlayers,
   Globals,
   Misc,
@@ -30,7 +28,7 @@ var
   Damage_Type: TDamageType;
   Damage_Absolute: boolean;
   Damage_Healing: boolean;
-  
+
 procedure Damage_ZombiesAreaDamage(ID: byte; x, y, r1, r2, damage: single; DamageType: TDamageType);
 
 // Damage will be given taking player-specific resitances and damage multipliers into account.
@@ -126,7 +124,7 @@ begin
     if Players[i].Alive then
     if player[i].Zombie then begin
       dist := Distance(x, y, Players[i].X, Players[i].Y);
-      if dist < r2 then begin  
+      if dist < r2 then begin
         if owner0 then ID := i;
         if damage > 0 then begin
           dmg := damage;

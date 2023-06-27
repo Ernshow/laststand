@@ -2,9 +2,7 @@ unit raycasts;
 
 interface
 
-{$ifdef FPC}
-  uses Scriptcore;
-{$endif}
+uses Scriptcore;
 
 function SqrDist(x, y, x2, y2: single): single;
 

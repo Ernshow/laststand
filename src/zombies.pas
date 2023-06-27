@@ -3,9 +3,7 @@ unit Zombies;
 interface
 
 uses
-	{$ifdef FPC}
-		Scriptcore,
-  {$endif}
+	Scriptcore,
 	Botwizard,
 	Constants,
 	Globals,
@@ -17,10 +15,11 @@ uses
   PlacePlayer;
 
 const
-	MAX_POWERS = 3; //Max powers that can be done at one time (not counting "quick powers")
+	//Max powers that can be done at one time (not counting "quick powers")
+	MAX_POWERS = 3;
 	FF_MAXTRAPS = 3;
-    FF_MAXHEATITEMS = 32;
-	
+  FF_MAXHEATITEMS = 32;
+
 type
 	tPower = record
 		CountDown, Victim, InUse, Var1, Var2: byte;
@@ -28,14 +27,14 @@ type
 		Progress: word;
 		Spawns: array of smallint;
 	end;
-	
+
 	tBoss = record
 		Outro: boolean;
-		ID, bID, CountDown, Intro, PwID: byte;
+		ID, bID, mbID, CountDown, Intro, PwID: byte; // ID - player ID, bID - boss ID, mbID - main boss ID
 		TempDmgInputFactor: single;
 		Power: array [0..MAX_POWERS] of tPower;
 	end;
-	
+
 	tFF = record
 		Trap: array [1..FF_MAXTRAPS] of record
 			InProgress: boolean;
@@ -54,7 +53,7 @@ type
 			X,Y: single;
 		end;
 	end;
-	
+
 	tSatan = record
 		ArtifactID: byte;
 		DoFireworks, Shadows, Artifact: boolean;
@@ -64,7 +63,7 @@ type
 			spawned: boolean;
 		end;
 	end;
-	
+
 	tPlague = record
 		ID: Byte;
 		MinionTimer, MinionLimit, MinionCounter, MinionStorage: byte;
@@ -84,9 +83,12 @@ var
 	Plague: tPlague;
 	Butcher, zomPriest: byte;
 	AutoBrain: boolean;
+	PlayerButcher: boolean;
 
 
 function Zombies_Respawn(ID: byte; ForcePosition: boolean; X, Y: single): boolean;
+
+procedure Zombies_SetPlayerButcherEnabled(Enabled: boolean);
 
 // decides who will be spawned as a boss now
 function Zombies_GetBossCandidate(JustCheck: boolean): byte;
@@ -102,31 +104,38 @@ function RandZombieText(s: byte): string;
 
 implementation
 
+procedure Zombies_SetPlayerButcherEnabled(Enabled: Boolean);
+begin
+	PlayerButcher := Enabled;
+end;
+
 // when a human-zombie "dies"
 procedure InfectedDeath(ID: Byte);
 var i: byte; modifier: single;
 begin
 	PerformProgressCheck := true;
 	player[ID].Respawned := false;
-	player[ID].Status := -2;
+	player[ID].Status := STATUS_PLAYER_DEAD_ZOMBIE;
 	player[ID].KickTimer := 0;
-	if Player[ID].SpawnTimer < 0 then begin // decide how long he will have to wait for spawn
-		player[ID].ZombiePlayTime := Timer.Value; // save time of "death"
+	// decide how long he will have to wait for spawn
+	if Player[ID].SpawnTimer < 0 then begin
+		// save time of "death"
+		player[ID].ZombiePlayTime := Timer.Value;
 		for i := 1 to MaxID do
 			if Players[i].Active then
 				case player[i].Status of
-				1: modifier := modifier - 0.2;
-				2: modifier := modifier + 0.2;
-				-1: modifier := modifier + 0.2;
-			end;
-		modifier := 7.0 + modifier*5.0 + SurvPwnMeter*5.0;
+					STATUS_PLAYER_ALIVE_SURVIVOR: modifier := modifier - 0.2;
+					STATUS_PLAYER_INFECTED_SURVIVOR: modifier := modifier + 0.2;
+					STATUS_PLAYER_ALIVE_ZOMBIE: modifier := modifier + 0.2;
+				end;
+		modifier := 7.0 + modifier * 5.0 + SurvPwnMeter * 5.0;
 		//i := NameToID('tk');
 		//if i > 0 then
 		//	writeconsole(i, 'result: ' + floatToStr(modifier) + ';  spm: ' + floatToStr(SurvPwnMeter), ORANGE);
 		if Modes.CurrentMode = 2 then begin // vs
 			Player[ID].SpawnTimer := ToRangeI(4, Round(modifier), 16);
 		end else // inf
-			Player[ID].SpawnTimer := ToRangeI(6, Round(modifier), 16);	
+			Player[ID].SpawnTimer := ToRangeI(6, Round(modifier), 16);
 	end;
 	player[ID].task := 0;
 	player[ID].AfkSpawnTimer := 0;
@@ -142,14 +151,14 @@ begin
 			2: Result := 'Roar!';
 			3: Result := 'Fear me!';
 			4: Result := 'Grrhhr!';
-			0: Result := 'Arrggh!'; 
+			0: Result := 'Arrggh!';
 			end;
 		1: case RandInt_(4) of
 			1: Result := 'Bluhhhr!';
 			2: Result := 'Mlearhh!';
 			3: Result := 'Prhhh!';
 			4: Result := 'Ulhrr!';
-			0: Result := 'Blurhh!'; 
+			0: Result := 'Blurhh!';
 		end;
 		6: case RandInt_(5) of
 			1: Result := 'Mlearh!';
@@ -186,14 +195,14 @@ end;
 function Zombies_Respawn(ID: byte; ForcePosition: boolean; X, Y: single): boolean;
 begin
 	if Players[ID].Active then begin
-		player[ID].Status := -1;
+		player[ID].Status := STATUS_PLAYER_ALIVE_ZOMBIE;
 		player[ID].AfkSpawnTimer := 3;
 		player[ID].AfkSpawnNum := 0;
 		if ForcePosition then begin
 			PutPlayer(ID, ZOMBIETEAM, X, Y, false);
 		end else
 			SetTeam(ZOMBIETEAM, ID, true);
-		SetScore(ID, player[ID].kills);
+		Players[ID].Kills := player[ID].kills;
 		Result := true;
 	end;
 end;
@@ -204,8 +213,10 @@ var i: byte; max: longint;
 begin
 	max := Timer.Value;
 	for i := 1 to MaxID do
-		if player[i].Status < 0 then begin // if he's a dead human-zombie
-			if player[i].BossPlayTime < max then begin // choose the one who has been waiting for the longest time
+		// if he's a dead human-zombie
+		if player[i].Status < 0 then begin
+			// choose the one who has been waiting for the longest time
+			if player[i].BossPlayTime < max then begin
 				max := player[i].BossPlayTime;
 				Result := i;
 			end;
@@ -222,10 +233,16 @@ begin
 	max := Timer.Value;
 	Result := false;
 	for i := 1 to MaxID do
-		if player[i].Status = -2 then begin // if he's a dead human-zombie
-			if player[i].SpawnTimer = 0 then begin // if his wait time to spawn is over
-				if player[i].ZombiePlayTime < max then begin // choose the one who has been waiting for the longest time
-					if (not player[i].PunishmentZombie.Active) or (AllowPunishmentZombie and player[i].PunishmentZombie.Active) then begin
+		// if he's a dead human-zombie
+		if player[i].Status = -2 then begin
+			// if his wait time to spawn is over
+			if player[i].SpawnTimer = 0 then begin
+				// choose the one who has been waiting for the longest time
+				if player[i].ZombiePlayTime < max then begin
+					if (not player[i].PunishmentZombie.Active)
+							or (AllowPunishmentZombie
+							and player[i].PunishmentZombie.Active) then
+					begin
 						max := player[i].ZombiePlayTime;
 						ID := i;
 						Result := true;
@@ -245,21 +262,24 @@ begin
 		end else
 			Result := 2;
 	end else
-	// choosing zombie's species depending on the number of wave, we wouldn't like to have 3 kamikazes in wave #1
+	// choosing zombie's species depending on the number of wave, we wouldn't
+	// like to have 3 kamikazes in wave #1
 	if NumberOfWave < 4 then begin // waves 2, 3
-		b := RandInt_(10);
-		if b <= 1 then Result := 200 else // 2/11
-		if b <= 6 then Result := 2 else // 5/11
-		if b <= 10 then Result := 4; // 4/11
+		b := RandInt_(13);
+		if b <= 1 then Result := 200 else // 2/13
+		if b <= 6 then Result := 2 else // 5/13
+		if b <= 10 then Result := 4 else // 4/13
+		if b <= 13 then Result := 51; // 3/13
 	end else begin // waves 4+
-		// decide if normal zombie should be spawned instead special one including some aspects
+		// decide if normal zombie should be spawned instead special one including
+		// some aspects
 		b := RandInt_(1);
 		for a := 1 to MaxID do // count zombies in game (weighted)
 			if Players[a].Alive then begin
 				if player[a].Status = -1 then begin
 					case player[a].Task of
 						1, 31: b := b + 4;
-						2, 4: b := b + 2;
+						2, 4, 51: b := b + 2;
 						200: b := b - 1;
 						else b := b + 1;
 					end;
@@ -267,28 +287,32 @@ begin
 				if player[a].Status = 2 then // if there are some dying survivors in game
 					b := b + 3;
 			end;
-		if b >= 10 then begin
+		if b >= 12 then begin
 			Result := 200;
 		end else begin
 			up:
 			if NumberOfWave <= 5 then begin // waves 4, 5
-				b := RandInt_(14);
-				if b <= 2 then Result := 1 else // 3/15
-				if b <= 7 then Result := 2 else // 5/15
-				if b <= 11 then Result := 4 else // 4/15
-				if b <= 14 then Result := 31; // 3/15
+				b := RandInt_(18);
+				if b <= 2 then Result := 1 else // 3/18
+				if b <= 7 then Result := 2 else // 5/18
+				if b <= 11 then Result := 4 else // 4/18
+				if b <= 14 then Result := 31 else // 3/18
+				if b <= 18 then Result := 51; // 5/18
 			end else begin // waves 6+
-				b := RandInt_(9);
-				if b <= 1 then Result := 1 else // 2/10
-				if b <= 4 then Result := 2 else // 3/10
-				if b <= 7 then Result := 4 else // 3/10
-				if b <= 9 then Result := 31; // 2/10
+				b := RandInt_(12);
+				if b <= 1 then Result := 1 else // 2/12
+				if b <= 4 then Result := 2 else // 3/12
+				if b <= 7 then Result := 4 else // 3/12
+				if b <= 9 then Result := 31 else // 2/12
+				if b <= 12 then Result := 51; // 3/12
 			end;
 			if not tryagain then begin
 				for a := 1 to MaxID do
 					if player[a].Status = -1 then
 						if player[a].Task = Result then begin
-							tryagain := true; // if such zombie is already in game then try to randomize once more (for diversity of zombie team)
+							// if such zombie is already in game then try to randomize once
+							// more (for diversity of zombie team)
+							tryagain := true;
 							break;
 						end;
 				if tryagain then goto up;
@@ -311,7 +335,7 @@ begin
 	Res.Helicopter := math.Pow(hp, 0.80);
 	Res.HolyWater  := math.Pow(hp, 0.78);
 	Res.ExoMagic   := hp*0.1;
-			
+
 	case style of
 		200: begin // versus spawn mode
 			Res.Wires      := math.Pow(hp, 0.92);
@@ -320,124 +344,130 @@ begin
 			Res.Helicopter := math.Pow(hp, 0.85);
 			Res.HolyWater  := math.Pow(hp, 0.85);
 		end;
-		
+
 		0, 91: begin
-			Res.ExoMagic   := hp*0.02 + 0.10; // make them vunerable to exorcism
+			Res.ExoMagic   := hp * 0.02 + 0.10; // make them vunerable to exorcism
 		end;
-		
-		2: begin
-			Res.ExoMagic   := hp*0.1 + 0.4;
+
+		2: begin // Vomits
+			Res.Heat			:= hp * 0.05;
+			Res.ExoMagic		:= hp * 0.2 + 0.4;
 		end;
-		
+
 		4: begin // burnings
-			Res.Heat       := 5.0 * hp;
-			Res.Explosion  := 4.0 * hp;
-			Res.ExoMagic   := hp*0.1 + 0.4;
+			Res.Heat				:= 5.0 * hp;
+			Res.Explosion		:= 4.0 * hp;
+			Res.ExoMagic		:= hp * 0.1 + 0.4;
 		end;
 
 		12: begin	// berserker/tank
-			Res.ExoMagic   := hp*0.10 + 0.70;
+			Res.ExoMagic		:= hp * 0.10 + 0.70;
 		end;
-		
+
 		1: begin // kami
-			Res.Explosion  := hp*0.80;
-			Res.Heat       := hp*0.80;
-			Res.ExoMagic   := hp*0.1 + 0.80;
+			Res.Explosion  := hp * 0.80;
+			Res.Heat       := hp * 0.80;
+			Res.ExoMagic   := hp * 0.1 + 0.80;
 		end;
-	
+
 		3: begin // butcher
 			Res.Shotgun    := math.Pow(hp, 0.83);
 			Res.SentryGun  := math.Pow(hp, 0.86);
 			Res.Helicopter := math.Pow(hp, 0.91);
 			Res.HolyWater  := math.Pow(hp, 0.91);
-			Res.ExoMagic   := hp*0.80;
+			Res.ExoMagic   := hp * 0.80;
 		end;
-	
+
 		31: begin // parts
-			Res.Explosion  := hp*0.8;
-			Res.ExoMagic   := hp*0.002 + 0.90;
+			Res.Explosion  := hp * 0.8;
+			Res.ExoMagic   := hp * 0.002 + 0.90;
 		end;
-		
+
 		5: begin // priest
 			Res.Shotgun    := math.Pow(hp, 0.83);
 			Res.SentryGun  := math.Pow(hp, 0.86);
 			Res.Helicopter := math.Pow(hp, 0.91);
 			Res.HolyWater  := math.Pow(hp, 0.91)*10.0;
-			Res.ExoMagic   := hp*0.80;
+			Res.ExoMagic   := hp * 0.80;
 		end;
-		
+
 		11: begin // kamikaze boss
-			Res.Explosion  := hp*0.80;
-			Res.Heat       := hp*0.80;
+			Res.Explosion  := hp * 0.80;
+			Res.Heat       := hp * 0.80;
 			Res.Shotgun    := math.Pow(hp, 0.82);
 			Res.SentryGun  := math.Pow(hp, 0.86);
 			Res.Helicopter := math.Pow(hp, 0.91);
 			Res.HolyWater  := math.Pow(hp, 0.91);
-			Res.ExoMagic   := hp*0.90;
+			Res.ExoMagic   := hp * 0.90;
 		end;
-		
-		51: begin // servers
-			Res.Explosion  := hp*0.80;
-			Res.Heat       := hp*0.80;
-			Res.ExoMagic   := hp*0.002 + 0.90;
+
+		51: begin // priest minion
+			Res.Explosion  := hp * 0.80;
+			Res.Heat       := hp * 0.80;
+			Res.ExoMagic   := hp * 0.002 + 0.90;
 			Res.HolyWater  := math.Pow(hp, 0.80)*2.0;
 		end;
-		
+
 		6: begin // firefighter
-			Res.Explosion  := hp*2.00;
-			Res.Heat       := hp*10.00;
+			Res.Explosion  := hp * 2.00;
+			Res.Heat       := hp * 10.00;
 			Res.Shotgun    := math.Pow(hp, 0.83);
 			Res.SentryGun  := math.Pow(hp, 0.86);
 			Res.Helicopter := math.Pow(hp, 0.91);
 			Res.HolyWater  := math.Pow(hp, 0.91);
-			Res.ExoMagic   := hp*0.90;
+			Res.ExoMagic   := hp * 0.90;
 		end;
-		
+
 		61: begin // firefighter's minions
-			Res.Explosion  := hp*2.00;
-			Res.Heat       := hp*10.0;
-			Res.ExoMagic   := hp*0.002 + 0.90;
+			Res.Explosion  := hp * 2.00;
+			Res.Heat       := hp * 10.0;
+			Res.ExoMagic   := hp * 0.002 + 0.90;
 		end;
-		
-					
+
+
 		62: begin // firefighter's trap
 			Res.Explosion  := hp * 0.50;
 			Res.Wires      := 99999.0;
 			Res.HolyWater  := 99999.0;
 			Res.ExoMagic   := 99999.0;
 		end;
-		
+
 		71: begin // minion
-			Res.ExoMagic   := hp*0.002 + 0.90;
+			Res.ExoMagic   := hp * 0.002 + 0.90;
 		end;
-		
+
 		81: begin // artifact
-			Res.ExoMagic   := hp*0.90; 
+			Res.ExoMagic   := hp * 0.90;
 		end;
-		
+
 		7, 8: begin // satan
-			Res.Explosion  := hp*1.50;
-			Res.Heat       := hp*1.50;
+			Res.Explosion  := hp * 1.50;
+			Res.Heat       := hp * 1.50;
 			Res.Shotgun    := math.Pow(hp, 0.83);
 			Res.SentryGun  := math.Pow(hp, 0.86);
 			Res.Helicopter := math.Pow(hp, 0.91);
 			Res.HolyWater  := math.Pow(hp, 0.91);
-			Res.ExoMagic   := hp*0.90;
+			Res.ExoMagic   := hp * 0.90;
 		end;
-			
+
 		9: begin // plague
-			Res.Explosion  := hp*1.50;
-			Res.Heat       := hp*1.50;
+			Res.Explosion  := hp * 1.50;
+			Res.Heat       := hp * 1.50;
 			Res.Shotgun    := math.Pow(hp, 0.83);
 			Res.SentryGun  := math.Pow(hp, 0.86);
 			Res.Helicopter := math.Pow(hp, 0.91);
 			Res.HolyWater  := math.Pow(hp, 0.91);
-			Res.ExoMagic   := hp*0.90;
+			Res.ExoMagic   := hp * 0.90;
 		end;
 	end;
 end;
 
-function Zombies_SpawnOne(hp, dmg: single; playerZomb, style: byte; x1, y1: single; ForcePos: boolean; param: byte): byte;
+function Zombies_SpawnOne(
+	hp, dmg: single;
+	playerZomb, style: byte;
+	x1, y1: single;
+	ForcePos: boolean;
+	param: byte): byte;
 var
 	ID, a: byte;
 	NewPlayer: TNewPlayer;
@@ -492,21 +522,21 @@ begin
 				player[ID].MaxDamagePerHit := MAXHEALTH+1;
 				player[ID].HeadShootBonus := 2.5;
 			end;
-			
+
 			0,2,4,91: begin // normal, vomiting, flame
 				if Zombies_GetZombieCandidate(ID, style = 0) then begin
 					if not Zombies_Respawn(ID, ForcePos, x1, y1) then exit;
 					if player[ID].PunishmentZombie.Active then begin // if he's a punishment zombie
 						hp := Sqrt(hp);
 						dmg := 1.0;
-						player[ID].charges := 0; // we will use htese as tmp variables
+						player[ID].charges := 0; // we will use these as tmp variables
 						player[ID].mines := 0;
 						player[ID].wires := 0;
 					end else begin
 						hp := 6.0 + 0.70 * hp;
+						dmg := 2.0 + math.Pow(dmg, 0.75);
 						if style = 4 then
 							hp := hp * 1.8;
-						dmg := 2.0 + math.Pow(dmg, 0.75);
 					end;
 				end else begin
 					case style of
@@ -560,7 +590,7 @@ begin
 				player[ID].HeadShootBonus := 2.0;
 				hp := hp * (7.0 + 0.5*Players_HumanNum);
 			end;
-			
+
 			1: begin // kami
 				if Zombies_GetZombieCandidate(ID, false) then begin
 					if not Zombies_Respawn(ID, false, 0, 0) then exit;
@@ -584,16 +614,35 @@ begin
 				player[ID].MaxDamagePerHit := MAXHEALTH+1;
 				player[ID].HeadShootBonus := 2.5;
 			end;
-		
+
 			3: begin // butcher
-				NewPlayer := BW_CreateButcher(HackermanMode);
-				NewPlayer.Team := ZOMBIETEAM;
-				try
-					ID := Players.Add(NewPlayer, TJoinSilent).ID;
-				finally
-					NewPlayer.Free;
+				ID := Zombies_GetBossCandidate(not PlayerButcher);
+				if (PlayerButcher) and (ID > 0) then begin
+					if not Zombies_Respawn(ID, false, 0, 0) then begin
+						NewPlayer := BW_CreateButcher(HackermanMode);
+						NewPlayer.Team := ZOMBIETEAM;
+						try
+							ID := Players.Add(NewPlayer, TJoinSilent).ID;
+						finally
+							NewPlayer.Free;
+						end;
+						AutoBrain := true;
+					end else begin
+						AutoBrain := DEFAULT_BOSS_BRAIN;
+						hp := hp * 0.75;
+					end;
+				end else begin
+					NewPlayer := BW_CreateButcher(HackermanMode);
+					NewPlayer.Team := ZOMBIETEAM;
+					try
+						ID := Players.Add(NewPlayer, TJoinSilent).ID;
+					finally
+						NewPlayer.Free;
+					end;
+					AutoBrain := true;
 				end;
- 				Butcher := ID;
+
+				Butcher := ID;
 				Boss.ID := ID;
 				Boss.bID := 3;
 				player[ID].jumping := 2;
@@ -605,21 +654,37 @@ begin
 				player[ID].MaxDamagePerHit := MAXHEALTH / 7;
 				player[ID].HeadShootBonus := 1.5;
 			end;
-		
+
 			31: begin // parts
-				NewPlayer := BW_CreateButcherPart(param - 1, HackermanMode);
-				try
-					ID := PutBot(NewPlayer, X1 - 12 + param*4, Y1, ZOMBIETEAM).ID;
-				finally
-					NewPlayer.Free;
+				if (PlayerButcher) and (Zombies_GetZombieCandidate(ID, false)) then begin
+					if not Zombies_Respawn(ID, ForcePos, x1, y1) then begin
+						NewPlayer := BW_CreateButcherPart(param - 1, HackermanMode);
+						NewPlayer.Team := ZOMBIETEAM;
+						try
+							ID := PutBot(NewPlayer, X1 - 12 + param*4, Y1, ZOMBIETEAM).ID;
+						finally
+							NewPlayer.Free;
+						end;
+					end else begin
+						hp := hp * 0.6;
+					end;
+				end else begin
+					NewPlayer := BW_CreateButcherPart(param - 1, HackermanMode);
+					NewPlayer.Team := ZOMBIETEAM;
+					try
+						ID := PutBot(NewPlayer, X1 - 12 + param*4, Y1, ZOMBIETEAM).ID;
+					finally
+						NewPlayer.Free;
+					end;
 				end;
+				
 				player[ID].jumping := 4;
 				player[ID].pri := WTYPE_CHAINSAW;
 				player[ID].MaxDamagePerSec := MAXHEALTH+1;
 				player[ID].MaxDamagePerHit := MAXHEALTH+1;
 				player[ID].HeadShootBonus := 2.5;
 			end;
-			
+
 			5: begin // priest
 				ID := Zombies_GetBossCandidate(false);
 				if ID > 0 then begin
@@ -632,7 +697,7 @@ begin
 							NewPlayer.Free;
 						end;
 						AutoBrain := true;
-					end else AutoBrain := false;
+					end else AutoBrain := DEFAULT_BOSS_BRAIN;
 				end else begin
 					NewPlayer := BW_CreatePriest(HackermanMode);
 					NewPlayer.Team := ZOMBIETEAM;
@@ -644,12 +709,12 @@ begin
 					AutoBrain := true;
 				end;
 				Boss.ID := ID;
-				Boss.bID := 5;	
+				Boss.bID := 5;
 				Boss.CountDown := 3;
-				zomPriest := ID;	
+				zomPriest := ID;
 				player[ID].jumping := 0;
 				player[ID].pri := WTYPE_NOWEAPON;
-				player[ID].boss := true;					
+				player[ID].boss := true;
 				player[ID].Mines := Players_StatusNum(1) + 2;
 				player[ID].AntiBlockProtection := true;
 				player[ID].ShowTaskinfo := true;
@@ -657,7 +722,7 @@ begin
 				player[ID].MaxDamagePerHit := MAXHEALTH / 7;
 				player[ID].HeadShootBonus := 1.5;
 			end;
-			
+
 			11: begin // kamikaze boss
 				ID := Zombies_GetBossCandidate(false);
 				if ID > 0 then begin
@@ -670,7 +735,7 @@ begin
 							NewPlayer.Free;
 						end;
 						AutoBrain := true;
-					end else AutoBrain := false;
+					end else AutoBrain := DEFAULT_BOSS_BRAIN;
 				end else begin
 					NewPlayer := BW_CreateKamikazeBoss(HackermanMode);
 					NewPlayer.Team := ZOMBIETEAM;
@@ -692,14 +757,30 @@ begin
 				player[ID].MaxDamagePerHit := MAXHEALTH / 2;
 				player[ID].HeadShootBonus := 1.5;
 			end;
-			
-			51: begin // servers
-				NewPlayer := BW_CreateAltarServer(HackermanMode);
-				try
-					ID := PutBot(NewPlayer, X1, Y1, ZOMBIETEAM).ID;
-				finally
-					NewPlayer.Free;
+
+			51: begin // priest minion
+				if Zombies_GetZombieCandidate(ID, false) then begin
+					if not Zombies_Respawn(ID, ForcePos, x1, y1) then begin
+						NewPlayer := BW_CreateAltarServer(HackermanMode);
+						NewPlayer.Team := ZOMBIETEAM;
+						try
+							ID := PutBot(NewPlayer, X1, Y1, ZOMBIETEAM).ID;
+						finally
+							NewPlayer.Free;
+						end;
+					end else begin
+						hp := hp * 0.85;
+					end;
+				end else begin
+					NewPlayer := BW_CreateAltarServer(HackermanMode);
+					NewPlayer.Team := ZOMBIETEAM;
+					try
+						ID := PutBot(NewPlayer, X1, Y1, ZOMBIETEAM).ID;
+					finally
+						NewPlayer.Free;
+					end;
 				end;
+
 				player[ID].jumping := 0;
 				player[ID].pri := WTYPE_NOWEAPON;
 				player[ID].AntiBlockProtection := true;
@@ -707,7 +788,7 @@ begin
 				player[ID].MaxDamagePerHit := MAXHEALTH+1;
 				player[ID].HeadShootBonus := 2.0;
 			end;
-			
+
 			6: begin // firefighter
 				ID := Zombies_GetBossCandidate(false);
 				if ID > 0 then begin
@@ -721,7 +802,7 @@ begin
 						end;
 						AutoBrain := true;
 					end else begin
-						AutoBrain := false;
+						AutoBrain := DEFAULT_BOSS_BRAIN;
 						hp := hp * 0.6;
 					end;
 				end else begin
@@ -739,6 +820,7 @@ begin
 				player[ID].boss := true;
 				Boss.ID := ID;
 				Boss.bID := 6;
+				Boss.mbID := 6;
 				Boss.Intro := 2;
 				if not AutoBrain then begin
 					player[ID].ShowTaskinfo := true;
@@ -750,7 +832,7 @@ begin
 				player[ID].MaxDamagePerHit := MAXHEALTH / 10;
 				player[ID].HeadShootBonus := 0.9;
 			end;
-			
+
 			61: begin // firefighter's minions
 				NewPlayer := BW_CreateFlame(HackermanMode);
 				try
@@ -767,8 +849,8 @@ begin
 				player[ID].MaxDamagePerHit := MAXHEALTH+1;
 				player[ID].HeadShootBonus := 2.0;
 			end;
-			
-						
+
+
 			62: begin // firefighter's trap
 				NewPlayer := BW_CreateTrap(HackermanMode);
 				try
@@ -782,7 +864,7 @@ begin
 				player[ID].MaxDamagePerHit := (MAXHEALTH+1)/sqrt(Players_StatusNum(1));
 				player[ID].HeadShootBonus := 0.0;
 			end;
-			
+
 			71: begin // minion
 				NewPlayer := BW_CreateMinion(HackermanMode);
 				try
@@ -798,7 +880,7 @@ begin
 				player[ID].MaxDamagePerHit := MAXHEALTH+1;
 				player[ID].HeadShootBonus := 2.0;
 			end;
-			
+
 			81: begin // artifact
 				NewPlayer := BW_CreateArtifact(HackermanMode);
 				try
@@ -813,7 +895,7 @@ begin
 				player[ID].MaxDamagePerHit := MAXHEALTH / 15;
 				player[ID].HeadShootBonus := 2.0;
 			end;
-			
+
 			107: begin
 				Boss.Intro := 9;
 				Boss.bID := 7;
@@ -826,7 +908,7 @@ begin
 				Result := 255;
 				exit;
 			end;
-			
+
 			7, 8: begin // satan
 				ID := Zombies_GetBossCandidate(false);
 				if ID > 0 then begin
@@ -840,7 +922,7 @@ begin
 						end;
 						AutoBrain := true;
 					end else begin
-						AutoBrain := false;
+						AutoBrain := DEFAULT_BOSS_BRAIN;
 						hp := hp * 0.5;
 					end;
 				end else begin
@@ -857,6 +939,7 @@ begin
 				player[ID].pri := WTYPE_NOWEAPON;
 				player[ID].boss := true;
 				Boss.ID := ID;
+				Boss.mbID := style;
 				Boss.Countdown := 5;
 				if not AutoBrain then begin
 					player[ID].task := style;
@@ -867,10 +950,10 @@ begin
 				player[ID].MaxDamagePerHit := MAXHEALTH / 15;
 				player[ID].HeadShootBonus := 0.9;
 			end;
-			
+
 			9: begin // plague
 				ID := Zombies_GetBossCandidate(false);
-				
+
 				if ID > 0 then begin
 					if not Zombies_Respawn(ID, false, 0, 0) then begin
 						NewPlayer := BW_CreatePlague(HackermanMode);
@@ -882,7 +965,7 @@ begin
 						end;
 						AutoBrain := true;
 					end else begin
-						AutoBrain := false;
+						AutoBrain := DEFAULT_BOSS_BRAIN;
 						hp := hp * 0.5;
 					end;
 				end else begin
@@ -897,17 +980,18 @@ begin
 				end;
 				player[ID].jumping := 4;
 				player[ID].pri := WTYPE_NOWEAPON;
-				player[ID].boss := true;				
+				player[ID].boss := true;
 				Boss.ID := ID;
-				Boss.bID := 9;	
+				Boss.bID := 9;
+				Boss.mbID := 9;
 				Plague.ID := ID;
 				Plague.MinionLimit := 10 + BRAVOPLAYERS * 3 div 2;
 				if Plague.MinionLimit > 32 then Plague.MinionLimit := 32;
 				Plague.MinionTimer := 1;
- 
+
 				//Fill minion array with zombies left
 				Plague.MinionCounter := 1;
-				for a := 1 to MaxID do 
+				for a := 1 to MaxID do
 					if Players[a].Alive then
 						if player[a].Zombie then begin // zombies
 							Plague.Minions[Plague.MinionCounter].ID := a;
@@ -915,13 +999,13 @@ begin
 							Plague.Minions[Plague.MinionCounter].Blown := False;
 							Plague.MinionCounter := Plague.MinionCounter + 1;
 						end;
-				player[ID].task := style;				
+				player[ID].task := style;
 				player[ID].ShowTaskinfo := true;
 				player[ID].AntiBlockProtection := true;
 				player[ID].MaxDamagePerSec := MAXHEALTH / 10;
 				player[ID].MaxDamagePerHit := MAXHEALTH / 15;
 				player[ID].HeadShootBonus := 0.9;
-				
+
 			end;
 		end;
 		Weapons_Force(ID, player[ID].pri, WTYPE_NOWEAPON, 0, 0);
