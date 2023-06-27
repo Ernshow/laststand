@@ -22,10 +22,10 @@ type
 		ID, owner: byte;
 		hp, LastHP: smallint;
 	end;
-	
+
 var
 	Scarecrow: tScarecrow;
-	
+
 procedure Scarecrow_TryPlace(ID: byte);
 
 procedure Scarecrow_TryDetonate();
@@ -37,7 +37,7 @@ procedure Scarecrow_Process();
 procedure Scarecrow_Clear();
 
 implementation
-	
+
 var
 	DetonateScarecrow: boolean;
 
@@ -90,7 +90,7 @@ begin
 				end else WriteConsole(ID, 'You are not the farmer ', RED);
 			end else WriteConsole(ID, 'You have to be on the ground to place a scarecrow', RED);
 		end else WriteConsole(ID, 'You have to be alive to place a scarecrow', RED);
-	end else WriteConsole(ID, 'You are not the farmer', RED);	
+	end else WriteConsole(ID, 'You are not the farmer', RED);
 end;
 
 procedure Scarecrow_Kaboom();
@@ -138,7 +138,7 @@ begin
 			Scarecrow_Kaboom();
 			WriteConsole(0, 'The farmer has detonated a scarecrow', GREEN);
 		end else
-		
+
 		if scarecrow.ID > 0 then begin
 			if (Timer.Value div 60) mod 10 = 1 then begin
 				CheckDummyOnFlag(scarecrow.ID);

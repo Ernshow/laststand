@@ -11,7 +11,8 @@ interface
 uses
 	Players,
 	Misc,
-	Maths;
+	Maths,
+	Rules;
 
 const
 	MAX_MINES = 	 20;
@@ -50,6 +51,8 @@ var
 	found: boolean;
 	a: byte;
 begin
+	if Rules_GetRuleValue('role.demo.allow_mine') <> 1 then exit;
+
 	for a := 1 to MAX_MINES do
 		if not Mines.Mine[a].placed then begin
 			found := true;
@@ -69,6 +72,8 @@ end;
 
 procedure Mines_TryPlace(ID: byte);
 begin
+	if Rules_GetRuleValue('role.demo.allow_mine') <> 1 then exit;
+	
 	if player[ID].task = 2 then begin
 		if Players[ID].Alive then begin
 			case Players_OnGround(ID, false, 20) of

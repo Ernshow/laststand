@@ -12,7 +12,8 @@ uses
 	Constants,
 	Players,
 	Misc,
-	Damage;
+	Damage,
+	Rules;
 	
 const
 	MAX_WIRES = 3;
@@ -48,6 +49,8 @@ implementation
 function Wires_TryPlace(owner: byte): boolean;
 var i, j, a: byte; x2, Y2: array[0..1] of single; X, Y: single; B: Boolean; z: shortint;
 begin
+	if Rules_GetRuleValue('role.mech.allow_wire') <> 1 then exit;
+
 	if player[owner].task = 1 then begin
 		if Players[owner].Alive then begin
 			case Players_OnGround(owner, false, 15) of

@@ -10,9 +10,9 @@ type
 
 var
 	MapList: tMapList;
-	
+
 procedure MapList_Load();
-	
+
 implementation
 
 procedure MapList_Load();
@@ -30,7 +30,7 @@ begin
 			break;
 		end;
 	end;
-	
+
 	n := MapList.Length div 5;
 	if n > 3 then n := 3 else
 	if n = 0 then n := 1;

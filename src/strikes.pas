@@ -21,6 +21,7 @@ uses
 	Ballistic,
 	MersenneTwister,
 	Fire,
+	Rules,
 	Utils;
 
 type
@@ -299,6 +300,7 @@ end;
 procedure Strike_Call(Style: byte);
 var x, y, y2: single;
 begin
+	if Rules_GetRuleValue('role.cop.allow_heli') <> 1 then exit;
 	Strike.X := Marker.X;
 	Strike.Y := Marker.Y;
 	Strike.Style := Style;
@@ -338,6 +340,7 @@ end;
 
 procedure Strike_SetMarker(ID: Byte);
 begin
+	if Rules_GetRuleValue('role.cop.allow_heli') <> 1 then exit;
 	GetPlayerXY(ID, Marker.X, Marker.Y );
 	if not RayCast2(0, 40, 200, Marker.X, Marker.Y) then begin
 		RayCast2(0, 4, 40, Marker.X, Marker.Y);

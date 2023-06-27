@@ -9,9 +9,7 @@ unit Boss;
 interface
 
 uses
-{$ifdef FPC}
 	Scriptcore,
-{$endif}
 	Players,
 	Debug,
 	Misc,
@@ -32,7 +30,7 @@ uses
 	Modes;
 
 const
-	
+
 //Satan 2 const
 	CircleRadius = 50; //Distance between player and circle bullets
 	CircleAmount = 12; //Number of circle bullets
@@ -50,9 +48,9 @@ const
 	ArtifactKillPhrase = 'NOOOOOOOOO!!!'; //What bot says while Artifact dies (fireworks begins)
 	sdietimes = 3;//How many times hellsea is rendered after Satan's death
 
-	
-// [The Undead Firefighter] (coded by The One)					
-		
+
+// [The Undead Firefighter] (coded by The One)
+
 	FF_TrapMSG = 'The Undead Firefighter has spawned a Trap, don''t come near it!';
 	FF_PortalMSG = 'The Undead Firefighter has spawned a Groundfire, don''t come near it!';
 
@@ -62,7 +60,7 @@ const
 
 	FF_MSGColor = $00FF0000;	//Not all of them are in use
 	FF_MSGColor2 = $0072A1D0;	//For human-FF
-	FF_MSGColor3 = $006BB521; 	//Health-status of FF in DrawText	
+	FF_MSGColor3 = $006BB521; 	//Health-status of FF in DrawText
 
 	FF_PORTALCOUNTER = 60; 	//Needed for VS; Normally it's one-use, only
 	FF_TRAPCOUNTER = 40;  	//Restarts after the Trap is destroyed
@@ -75,16 +73,16 @@ const
 	FF_SHEATDMG = 60;
 
 	FF_SQR_GHR = FF_GHEATRANGE * FF_GHEATRANGE;
-	
+
 var
 	HaxID, ForcedPower: byte;
-	
+
 procedure DrawLine(X1, Y1, X2, Y2: single; N, Owner: byte; rc: boolean);
 
 procedure Boss_IncreaseTempInputFactor(x: single);
- 
+
 procedure BlackScreen(ID: byte);
- 
+
 procedure ProcessPlague();
 
 function PowerNumToName(PwID: byte): string;
@@ -155,16 +153,16 @@ var i: byte;
 begin
 	for i := 1 to MAX_UNITS do begin
 		Plague.Minions[i].ID := 0;
-		Plague.Minions[i].X := 0
-		Plague.Minions[i].Y := 0
+		Plague.Minions[i].X := 0;
+		Plague.Minions[i].Y := 0;
 		Plague.Minions[i].dead := false;
-		Plague.Minions[i].blown := false;	
+		Plague.Minions[i].blown := false;
 	end;
 	Plague.ID := 0;
 	Plague.ChatTimer := 0;
 	Plague.MinionTimer := 2;
 	Plague.MinionCounter := 0;
-	Plague.MinionLimit := 0;	
+	Plague.MinionLimit := 0;
 	Plague.MinionStorage := 0;
 	Plague.ChangeTimer := True;
 end;
@@ -216,7 +214,7 @@ begin
 				86: Pwr.CountDown := 5; //Shadows
 				87: Pwr.CountDown := 5; //Living Artifact
 				88: Pwr.CountDown := 5; //Fireworks
-				else Pwr.CountDown := 0; 
+				else Pwr.CountDown := 0;
 			end;
 		end else begin
 			case Pwr.InUse of
@@ -240,7 +238,7 @@ begin
 				86: Pwr.CountDown := 5; //Shadows
 				87: Pwr.CountDown := 5; //Living Artifact
 				88: Pwr.CountDown := 5; //Fireworks
-				else Pwr.CountDown := 0; 
+				else Pwr.CountDown := 0;
 			end;
 		end;
 	end;
@@ -372,12 +370,12 @@ begin
   ApplyWeapons(Boss.ID, false);
   Spawn_AddZombies(SummonMinionsBots, 71);}
 end;
- 
+
 procedure BlackScreen(ID: byte);
 begin
 	BigText_DrawScreenX(DTL_BLACKOUT,ID,'XXX',160,$000000,35,-3000,-3000);
 end;
- 
+
 procedure Paralyse(ID: byte; var Pwr: tPower);
 var i, z: byte; x, y: single; G, H: single;
 begin
@@ -387,24 +385,24 @@ begin
 			BlackScreen(ID);
 			Boss_IncreaseTempInputFactor(0.15);
 			WriteConsole(0, Players[ID].Name + ' has been paralysed by Satan', RED);
-			
+
 			H := Players[ID].Health;
 			G := Players[ID].Vest;
 			z := Players[ID].Grenades;
 			Pwr.Var1 := Players[ID].Primary.WType;
 			Pwr.Var2 := Players[ID].Secondary.WType;
 			if (not Weapons_IsInMenu(Pwr.Var1)) and (not Weapons_IsInMenu(Pwr.Var2)) then Pwr.Var1 := WTYPE_USSOCOM;
-			
+
 			Weapons_Force(ID, WTYPE_NOWEAPON, WTYPE_NOWEAPON, 0, 0);
-		
+
 			GetPlayerXY(ID, x, y);
 			PlacePlayer(ID, HUMANTEAM, x, y, true);
-			
-			if z > 0 then 
+
+			if z > 0 then
 				if Player[ID].Task <> 2 then GiveBonus(ID, 4)
 				else GiveBonus(ID, 5);
-			Damage_SetHealth(ID, H, G);	
-					
+			Damage_SetHealth(ID, H, G);
+
 			player[ID].GetX := true;
 			if WeaponSystem.Enabled then begin
 				BaseWeapons_RefreshActive();
@@ -461,7 +459,7 @@ var
 begin
 	//15Hz power, bitches!
 	if Pwr.Progress = 0 then begin
-		
+
 		PentagramData.range := PentagramRange;
 		if player[Shooter].Status = -1 then begin
 			PentagramData.range := PentagramData.range * 3 div 4;
@@ -486,7 +484,7 @@ begin
 				Shooter,
 				true);
 			if Pwr.Progress = 4 then begin
-				for i := 1 to MaxID do 
+				for i := 1 to MaxID do
 					if Players[i].Alive then
 						if not player[i].zombie then
 							if IsInRange(i, Pwr.X, Pwr.Y, PentagramData.range * 3 div 4, false) then begin
@@ -502,7 +500,7 @@ begin
 		end;
 	end;
 end;
- 
+
 procedure SummonSpawns(Victim: byte; var Pwr: tPower);
 var
   c, sine, cosine: single;
@@ -524,7 +522,7 @@ begin
 	end;
 	ResetPower(Pwr);
 end;
- 
+
 function Lighting(T, ID: byte; var Pwr: tPower): boolean;
 var x, y, x2, y2: single; i, j: byte;
 begin
@@ -545,7 +543,7 @@ begin
 				if RayCast(x, y, x, y, true, false, false) then begin
 					Result := true;
 					x2 := x; y2 := y;
-					for j := 0 to 6 do begin 
+					for j := 0 to 6 do begin
 						y := y + 50;
 						x := x - 30 + RandInt(0, 60);
 						DrawLine(X2, Y2, X, Y, 4, ID, false);
@@ -559,7 +557,7 @@ begin
 						end;
 					end;
 					break;
-				end;	
+				end;
 			end;
 		end;
 	end;
@@ -620,7 +618,7 @@ begin
 		GetPlayerXY(Victim, Pwr.X, Pwr.Y);
 		if player[Victim].Status = 1 then PlacePlayer(Victim, HUMANTEAM, Pwr.X, Pwr.Y, false);
 	end else begin
-		repeat 
+		repeat
 			sine := sin(2*pi*Pwr.Progress/CircleAmount);
 			cosine := cos(2*pi*Pwr.Progress/CircleAmount);
 			Pwr.Progress := Pwr.Progress - 1;
@@ -697,7 +695,7 @@ begin
 			exit;
 		end;
 		Pwr.Progress := RainWarnings*5+RainAmount;
-		BotChat(Shooter, RandZombieText(4))
+		BotChat(Shooter, RandZombieText(4));
 		Boss_IncreaseTempInputFactor(0.1);
 		GetPlayerXY(Victim, Pwr.X, Pwr.Y);
 	end else begin
@@ -833,10 +831,10 @@ var
 begin
 	if Timer.Cycle <> 1 then exit; //1hz power
 	if Pwr.Progress = 0 then begin
-		Pwr.Progress := ArrowWarnings
-		BotChat(Shooter, ArrowPhrase)
+		Pwr.Progress := ArrowWarnings;
+		BotChat(Shooter, ArrowPhrase);
 	end else begin
-		Pwr.Progress := Pwr.Progress -1
+		Pwr.Progress := Pwr.Progress -1;
 		if Pwr.Progress = 0 then begin
 			GetPlayerXY(Shooter, Pwr.X, Pwr.Y);
 			Pwr.Y := Pwr.Y - 10;
@@ -896,7 +894,7 @@ begin
 		for i := 0 to (GetArrayLength(Boss.Power[0].Spawns)-1) do
 			CreateBulletX(Boss.Power[0].X + (i * 5) - 125 + RandFlt(-5, 5), Boss.Power[0].Y+Boss.Power[0].Spawns[i] + RandFlt(-4, 4), 0, 0, 0, 5, Boss.ID);
 		if Boss.Intro = 0 then begin
-			//crucifix	
+			//crucifix
 			CreateBulletX(Boss.Power[0].X, Boss.Power[0].Y - 30, 0, 0, 0, 5, Boss.ID);
 			CreateBulletX(Boss.Power[0].X, Boss.Power[0].Y - 40, 0, 0, 0, 5, Boss.ID);
 			CreateBulletX(Boss.Power[0].X, Boss.Power[0].Y - 50, 0, 0, 0, 5, Boss.ID);
@@ -905,8 +903,8 @@ begin
 			CreateBulletX(Boss.Power[0].X + 10, Boss.Power[0].Y - 50, 0, 0, 0, 5, Boss.ID);
 			//M2 circle
 			for i := 0 to 11 do
-				CreateBulletX(Boss.Power[0].X, Boss.Power[0].Y, 0 + (i * 10) - 50, -25, 0, 14, Boss.ID);				
-			//reset procedure	
+				CreateBulletX(Boss.Power[0].X, Boss.Power[0].Y, 0 + (i * 10) - 50, -25, 0, 14, Boss.ID);
+			//reset procedure
 			if (player[Boss.ID].Participant = 0) and (not Players[Boss.ID].Human) then begin
 				player[Boss.ID].kicked := true;
 				Players[Boss.ID].Kick(TKickSilent);
@@ -945,7 +943,7 @@ var
 	a, n, i: integer;
 	X, Y, X2, Y2: single;
 begin
-	if Timer.Cycle <> 1 then exit; //1hz power	
+	if Timer.Cycle <> 1 then exit; //1hz power
 	for a := 1 to FF_MAXTRAPS do begin
 		if Firefighter.Trap[a].ID > 0 then begin
 			if not Firefighter.Trap[a].InProgress then continue;
@@ -994,7 +992,7 @@ begin
 			x := -75 + i * 8;
 			y := 0.0;
 			while not RayCast(Pwr.X + x, Pwr.Y - 50, Pwr.X + x, Pwr.Y + y, true, true, true) do begin
-				y := y + 10.0;				//Raycasting, until no polygon stops this	
+				y := y + 10.0;				//Raycasting, until no polygon stops this
 				if (y > 200.0) then break;
 			end;
 			Pwr.Spawns[i] := Round(y);			//If the place is fine, the Y-value is written into the array
@@ -1040,7 +1038,7 @@ begin
 		end;
 
 		if Pwr.Progress > 3 then
-		begin	
+		begin
 			CreateBulletX(Pwr.X, Pwr.Y+Pwr.Spawns[9] - 10, 0, 0, 0, 5, ID);
 			CreateBulletX(Pwr.X + 13, Pwr.Y+Pwr.Spawns[10] - 10, 0, 0, 0, 5, ID);
 			CreateBulletX(Pwr.X - 13, Pwr.Y+Pwr.Spawns[8] - 10, 0, 0, 0, 5, ID);
@@ -1053,7 +1051,7 @@ begin
 		end;
 
 		if Pwr.Progress > 4 then
-		begin		
+		begin
 			CreateBulletX(Pwr.X + 8, Pwr.Y+Pwr.Spawns[11] - 22, 0, 0, 0, 5, ID);
 			CreateBulletX(Pwr.X - 8, Pwr.Y+Pwr.Spawns[7] - 22, 0, 0, 0, 5, ID);
 			CreateBulletX(Pwr.X + 24, Pwr.Y+Pwr.Spawns[13] - 22, 0, 0, 0, 5, ID);
@@ -1140,7 +1138,7 @@ begin
 			if SqrDist(Pwr.X, Pwr.Y, charge[i].X, charge[i].Y) <= FF_SQR_GHR then begin
 				n := n + 1;
 				CreateBulletX(charge[i].X, charge[i].Y, 0, 0, 0, 5, Boss.ID);
-				WriteConsole(charge[i].owner, 'Charge [' + IntToStr(i+1) + '] destroyed.', RED);				
+				WriteConsole(charge[i].owner, 'Charge [' + IntToStr(i+1) + '] destroyed.', RED);
 				Charges_Clear(i);
 			end;
 	if n > 0 then begin
@@ -1201,17 +1199,17 @@ begin
 	Pwr.Y := Pwr.Y - 10;
 	for i := 1 to MaxId do
 		if Players[i].Alive then
-			if player[i].Status = 1 then 
+			if player[i].Status = 1 then
 			begin
 				GetPlayerXY(i, xvar, yvar);
 				dist := SqrDist(Pwr.X, Pwr.Y, xvar, yvar);
-				if dist <= Range * Range then 
-				begin					
+				if dist <= Range * Range then
+				begin
 					dist := Sqrt(dist);
 					duration := Trunc((range / 3) * (1 - dist / Range) + 30);
 					Damage_DoRelative(i, ID, Trunc((dmg) * (1 - dist / Range) * RayCast3(Pwr.X, Pwr.Y-10, xvar, yvar-10, 5, 5)), Heat);
-					PlaySound(i, 'firecrack.wav', xvar, yvar);					
-				end;				
+					PlaySound(i, 'firecrack.wav', xvar, yvar);
+				end;
 			end;
 	range := range + 100;
 	PlaySound(i, 'onfire.wav', Pwr.X, Pwr.Y);
@@ -1253,7 +1251,7 @@ begin
 		Pwr.Progress := Pwr.Progress - 1;
 		BigText_DrawScreenX(DTL_ZOMBIE_UI, Boss.ID, 'Extreme Heat '+iif(Pwr.Progress = 0, '!', '['+IntToStr(Pwr.Progress)+']'),200, RGB(255,0 + Pwr.Progress*20,11), 0.1, 20,370);
 		GetPlayerXY(Boss.ID, x, y);
-		if abs(x - Pwr.X) > 200 then begin						
+		if abs(x - Pwr.X) > 200 then begin
 			BigText_DrawScreenX(DTL_ZOMBIE_UI, Boss.ID, 'Extreme Heat failed.',100,  $FF6056, 0.1, 20,370 );
 			WriteConsole(Boss.ID, 'Extreme Heat failed.', $FF6056);
 			if Boss.CountDown > 5 then Boss.CountDown := 5;
@@ -1278,7 +1276,7 @@ var
 begin
 	if (Timer.Cycle <> 1) and (Timer.Cycle <> 33) then exit; //2Hz power; //2hz power
 	if Players[Boss.ID].Alive then begin
-		GetPlayerXY(Boss.ID, x, y);	
+		GetPlayerXY(Boss.ID, x, y);
 		Dist := Distance(x, y, Firefighter.Trail.X, Firefighter.Trail.Y);
 		if Dist > 60 then begin
 			vx := (x - Firefighter.Trail.X) / Dist * 15;
@@ -1303,36 +1301,36 @@ var i, j, t, amount: byte;
 	a: byte;
 	x,y: single;
 begin
-	if (Plague.ID > 0) then 
+	if (Plague.ID > 0) then
 	begin
 		i := Plague.ID;
 		//Add a new Minion to the game
 		if Plague.MinionTimer = 0 then
-		if Plague.MinionCounter + Plague.MinionStorage < Plague.MinionLimit then 
+		if Plague.MinionCounter + Plague.MinionStorage < Plague.MinionLimit then
 		begin
 			Plague.MinionStorage := Plague.MinionStorage + 1;
 			if Plague.ChangeTimer then
 			begin
 				amount := Plague.MinionCounter + Plague.MinionStorage;
 				if amount < BRAVOPLAYERS*2 then Plague.MinionTimer := iif(Plague.hc, 1, 2) else
-				if (amount >= BRAVOPLAYERS*2) and (amount < BRAVOPLAYERS * 3) then 
+				if (amount >= BRAVOPLAYERS*2) and (amount < BRAVOPLAYERS * 3) then
 					Plague.MinionTimer :=iif(Plague.hc, 3, 5) else
 				if amount >= (BRAVOPLAYERS * 3) then begin
 					Plague.MinionTimer := iif(Plague.hc, 4, 7);
 					Plague.ChangeTimer := False;
 				end else
 				if BRAVOPLAYERS = 0 then Plague.Miniontimer := 4; //Just for AdminSinglePlayerTesting
-			end;	
+			end;
 			if not Plague.ChangeTimer then Plague.MinionTimer := iif(Plague.hc, iif(Players[Plague.ID].Human, 5, 4), iif(Players[Plague.ID].Human, 9, 7));
 		end;
-		
+
 		b := Autobrain;
 		if not b then b := GetKeyPress(Plague.ID, 'Reload'); // not to check it on bot...
 		if b then
 			if Plague.MinionStorage > 0 then
 			begin
 				Plague.MinionStorage := Plague.MinionStorage - 1;
-				Plague.MinionCounter := Plague.MinionCounter + 1;			
+				Plague.MinionCounter := Plague.MinionCounter + 1;
 				for j := 1 to Plague.MinionLimit do
 					if Plague.Minions[j].ID = 0 then t := j;
 				GetPlayerXY(i, x, y);
@@ -1346,29 +1344,29 @@ begin
 		if GetKeyPress(Plague.ID, 'Grenade') then
 			if Plague.CoolDown > 0 then WriteConsole(Plague.ID, 'Recalling not ready yet', INFORMATION);
 	end;
-	
+
 	b := Autobrain;
 	if not b then b := GetKeyPress(Plague.ID, 'Grenade'); // not to check it on bot...
-	
+
 	a := 0; //revived amount
-	
+
 	for j := 1 to Plague.MinionLimit do
 	begin
 		//Revive
 		if Plague.ID > 0 then
-			if b then 
+			if b then
 			begin
 				GetPlayerXY(Plague.ID, X, Y);
-			
-				if Plague.Minions[j].ID <> 0 then			
+
+				if Plague.Minions[j].ID <> 0 then
 					if (Plague.CoolDown = 0) or (not player[plague.id].Status < 0) then //Can it be casted?
 						if SqrDist(Plague.Minions[j].X, Plague.Minions[j].Y, X, Y) < 22500 then	//Is Minion in Range?
-							if Plague.Minions[j].dead then 
+							if Plague.Minions[j].dead then
 								if not Plague.Minions[j].blown then
 								begin
 									a := a + 1;
-									PlacePlayer(Plague.Minions[j].ID, ZOMBIETEAM, Plague.Minions[j].X, Plague.Minions[j].Y, false)
-									if (Plague.ChatTimer = 0) or (player[plague.id].Status < 0) then 
+									PlacePlayer(Plague.Minions[j].ID, ZOMBIETEAM, Plague.Minions[j].X, Plague.Minions[j].Y, false);
+									if (Plague.ChatTimer = 0) or (player[plague.id].Status < 0) then
 									begin
 										BotChat(Plague.ID, RandZombieText(5));
 										Plague.ChatTimer := 4;
@@ -1377,9 +1375,9 @@ begin
 									Plague.Minions[j].blown := false;
 									player[Plague.Minions[j].ID].Health := MAXHEALTH;
 									if player[plague.id].Status < 0 then Plague.CoolDown := 4;
-								end;			
+								end;
 			end;
-						
+
 		//Respawn'd
 		if Plague.Minions[j].dead then
 			if Plague.Minions[j].ID <> 0 then
@@ -1407,19 +1405,19 @@ begin
 	if Plague.ID > 0 then
 	begin
 		if GetKeyPress(Plague.ID, 'Grenade') then
-			if Plague.ChatTimer <> 4 then 
-				if Plague.CoolDown = 0 then 
+			if Plague.ChatTimer <> 4 then
+				if Plague.CoolDown = 0 then
 					if player[plague.id].Status < 0 then
 					begin
 						WriteConsole(Plague.ID, 'No zombie corpse nearby', INFORMATION);
 						Plague.CoolDown := 4;
-					end;	
-			
+					end;
+
 		if Plague.ChatTimer > 0 then Plague.ChatTimer := Plague.ChatTimer - 1;
 		if Plague.MinionTimer > 0 then Plague.MinionTimer := Plague.MinionTimer - 1;
-		if Plague.CoolDown = 1 then WriteConsole(Plague.ID, 'Recalling ready', GREEN);			
-		if Plague.CoolDown > 0 then 
-			Plague.CoolDown := Plague.Cooldown - 1;	
+		if Plague.CoolDown = 1 then WriteConsole(Plague.ID, 'Recalling ready', GREEN);
+		if Plague.CoolDown > 0 then
+			Plague.CoolDown := Plague.Cooldown - 1;
 		if Plague.MinionStorage > 0 then
 			BigText_DrawScreenX(DTL_ZOMBIE_UI, Plague.ID, 'Minions: [' + IntToStr(Plague.MinionStorage) + ']', 120, GREEN, 0.08, 20, 370 );
 	end;
@@ -1442,7 +1440,7 @@ begin
 end;
 
 procedure CreateAltar(Shooter, Victim: byte; var Pwr: tPower);
-var 
+var
 	x, y: single;
 	i: integer;
 	s: string;
@@ -1714,7 +1712,7 @@ var
 begin
 	Result := 0;
 	for i := 0 to MAX_POWERS do
-		if Boss.Power[i].InUse > 0 then 
+		if Boss.Power[i].InUse > 0 then
 			if Boss.Power[i].CountDown = 0 then begin
 				if CheckPowerColision(Power, Boss.Power[i].InUse) then begin
 					Result := Boss.Power[i].InUse;
@@ -2085,20 +2083,20 @@ begin
 			player[Boss.ID].bitten := false;
 			i := Trunc(player[Boss.ID].Health/MAXHEALTH * 100);
 			if i > 0 then
-			begin 
+			begin
 				if HackermanMode then begin
 					BigText_DrawMap(0, IntTostr(RandInt_(1)), RandInt(40, 60), $22FF22, RandFlt(0.02, 0.05), trunc(Players[Boss.ID].X) + RandInt(-10, 10), trunc(Players[Boss.ID].Y) + RandInt(-10, 0));
 					s := 'Player[Boss.ID].Health = 0x' + UIntToHex(Round(player[Boss.ID].Health/MAXHEALTH * 255));
 				end else begin
-					s := BossName(Boss.bID) + ': ' + IntToStr(Round(player[Boss.ID].Health/MAXHEALTH * 100)) + '%';				
+					s := BossName(Boss.bID) + ': ' + IntToStr(Round(player[Boss.ID].Health/MAXHEALTH * 100)) + '%';
 				end;
 				BigText_DrawScreenX(DTL_ZOMBIE_UI, 0, s, 120, RG_Gradient(player[Boss.ID].Health/MAXHEALTH, 0.9), 0.08, 20, 370);
 			end;
 		end;
-	
+
 		Boss.TempDmgInputFactor := (Boss.TempDmgInputFactor + 0.1) / 1.1; // tend to 1
 		//writeconsole(0, floattostr(roundto(Boss.TempDmgInputFactor, 2)), red);
-	
+
 		DrawBossInterface();
 		//DrawDebugInterface();
 
@@ -2109,7 +2107,7 @@ begin
 				if Boss.Power[0].CountDown = 0 then
 					Boss.Power[0].InUse := 0;
 			end;
-	
+
 		if Boss.Power[0].InUse = 0 then
 			case Boss.bID of
 				6: begin
@@ -2175,7 +2173,7 @@ begin
 					end;
 				end;
 			end;
-		
+
 		//lower local countdowns
 		slot := 0;
 		for i := MAX_POWERS downto 1 do
@@ -2189,7 +2187,7 @@ begin
 						end;
 					end;
 			end else slot := i;
-	
+
 		if Boss.CountDown > 0 then begin
 			Boss.CountDown := Boss.CountDown - 1;
 			exit;
@@ -2224,7 +2222,7 @@ begin
 			for min := min to max do
 				if CheckCollision(min) = 0 then
 					if ManualCheckSpell(min) then begin
-						Boss.PwID := min
+						Boss.PwID := min;
 						break;
 					end;
 			if Boss.PwID > 0 then

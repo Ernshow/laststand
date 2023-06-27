@@ -22,6 +22,7 @@ uses
 	Misc,
 	MersenneTwister,
 	Stacks,
+	Rules,
 	Raycasts;
 
 const
@@ -181,6 +182,8 @@ end;
 // Pop the next charge to detonate
 function Charges_Pop(var s: tStack8): integer;
 begin
+	if Rules_GetRuleValue('role.demo.allow_charge') <> 1 then exit;
+
 	Assert(s.Length > 0, 'Charges_Pop');
 	Result := stack8_pop(s, s.Length - 1);
 	Charges_Unmark(Result);
@@ -208,6 +211,8 @@ end;
 // Add a charge to the queue
 procedure Charges_Push(CID: integer; var s: tStack8);
 begin
+	if Rules_GetRuleValue('role.demo.allow_charge') <> 1 then exit;
+
 	if s.Length > 0 then
 		Charges_Mark(s.arr[s.length-1], CHAR_COL);
 	Charges_Mark(CID, CHAR_NEXT_COL);
@@ -246,6 +251,7 @@ var
 	i: byte; b: boolean;
 	found: integer;
 begin
+	if Rules_GetRuleValue('role.demo.allow_charge') <> 1 then exit;
 	if Players[ID].Alive then begin
 		case Players_OnGround(ID, false, 20) of
 			1: 	if (player[ ID ].task = 2) then begin
@@ -344,6 +350,7 @@ const ERR_NORCH = 'There are no remote charges placed!';
 procedure Charges_Activate(ID: byte; a: smallint);
 var i: smallint; n: byte;
 begin
+	if Rules_GetRuleValue('role.demo.allow_charge') <> 1 then exit;
 	// All
 	if a = -1 then begin
 		for i:=0 to Charges_MaxID do begin

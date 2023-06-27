@@ -420,6 +420,7 @@ var
 	n: integer;
 begin
 	ResetBoss();
+	Boss.mbID := 0; // Reset main boss tracker for previous wave
 	Spawn_ClearAllZombies();
 	TaskPolice_OnNextWave();
 
@@ -732,6 +733,7 @@ begin
 	end;
 	GameRunning := false;
 	BW_Reset(HackermanMode);
+	Rules_InitializeDefaultRules();
 end;
 
 procedure DisplayVersus();
@@ -3609,6 +3611,9 @@ begin
 				{>} EarthQuake_Process(Timer.Cycle = 6);
 			{>} Hax_OnTick();
 			{>} Scarecrow_Process(Timer.Cycle = 6, Timer.Value mod 600 = 6);
+			if Timer.Cycle mod 56 = 0 then begin
+				//Chaos_OnTick();
+			end;
 		end else
 		if Timer.Cycle mod 20 = 4 then begin // (3 hz) 4, 24, 44
 			{>} ProcessMolotovExplosion();
@@ -4087,6 +4092,12 @@ begin
 								WriteConsole(ID, 'No matching mode found, type /modehelp for the available modelist', RED);
 						end;
 					end;
+
+				'/rules': try
+					Rules_PrintRules(ID);
+				except
+					exit;
+				end;
 
 				'/place':
 					if DemoMan.ID = ID then begin
@@ -4696,6 +4707,31 @@ begin
 				'/disableplayerbutcher': try
 					Zombies_SetPlayerButcherEnabled(false);
 					WriteMessage(0, 'Player-controlled Undead Butcher is now disabled', RED);
+				except
+					WriteMessage(ID, S_ERROR_ARG + '/' + S_ERROR_MSG, RED);
+					exit;
+				end;
+				'/enablechaosmode': try
+					Chaos_SetChaosModeEnabled(true);
+					WriteMessage(0, 'Chaos mode is now enabled', RED);
+				except
+					WriteMessage(ID, S_ERROR_ARG + '/' + S_ERROR_MSG, RED);
+					exit;
+				end;
+				'/disablechaosmode': try
+					Chaos_SetChaosModeEnabled(false);
+					WriteMessage(0, 'Chaos mode is now disabled', RED);
+				except
+					WriteMessage(ID, S_ERROR_ARG + '/' + S_ERROR_MSG, RED);
+					exit;
+				end;
+
+				'/rule': try
+					if (GetPiece(Text, ' ', 2) = Nil) then begin
+						WriteMessage(ID, IntToStr(Rules_GetRuleValue(GetPiece(Text, ' ', 1))), RED);
+					end else begin
+						Rules_SetRuleValue(GetPiece(Text, ' ', 1), StrToID(GetPiece(Text, ' ', 2), 0));
+					end;
 				except
 					WriteMessage(ID, S_ERROR_ARG + '/' + S_ERROR_MSG, RED);
 					exit;

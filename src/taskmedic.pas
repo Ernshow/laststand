@@ -23,7 +23,8 @@ uses
 	Strikes,
 	Tasks,
 	Weapons,
-	WeaponMenu;
+	WeaponMenu,
+	Rules;
 
 procedure TaskMedic_Call(ID: byte);
 
@@ -66,16 +67,19 @@ const
 // * ------------------ *
 procedure Radar_DrawWorldMarkerMedic(i: byte);
 begin
+	if Rules_GetRuleValue('role.doc.allow_revive') <> 1 then exit;
+
 	//BigText_DrawMapX(WTL_RADAR, i, '^', 120, RG_Gradient(1.0*player[i].SpecTimer/DeathTimer, 240), RADAR_MAP_SCALE, player[i].X - 7, player[i].Y-5);
 	BigText_DrawMapX(WTL_RADAR+i, Medic.ID, '^', 120,
   	RG_Gradient(1.0*player[i].SpecTimer/LSMap.DeathTimer, 0.9), RADAR_MAP_SCALE,
-    Trunc(player[i].X) - 7, Trunc(player[i].Y-5)
-  );
+    Trunc(player[i].X) - 7, Trunc(player[i].Y-5));
 end;
 
 procedure Radar_DrawWorldMarkerOthers(i: byte);
 var j, k: integer;
 begin
+   if Rules_GetRuleValue('role.doc.allow_revive') <> 1 then exit;
+
   for k := 0 to 1 do // packetloss
   for j := 1 to MaxID do begin
   	if Players[j].Human then
@@ -105,6 +109,8 @@ end;
 procedure Radar_Draw(Time: integer);
 var i, j: integer;
 begin
+	if Rules_GetRuleValue('role.doc.allow_revive') <> 1 then exit;
+
 	DrawTextEx(Medic.ID, DTL_RADAR, '.', Time * 60, RADAR_PLAYER_COL, RADAR_SCALE, RADAR_X, RADAR_Y);
 	for i := 0 to 1 do begin // packetloss
 		for j := 1 to round(2*ANG_PI/RADAR_ALPHA) do begin
@@ -144,6 +150,8 @@ var
 	dx, dy, d, factor: single;
 	str: string;
 begin
+	if Rules_GetRuleValue('role.doc.allow_revive') <> 1 then exit;
+
 	if Medic.ID > 0 then
 	if Players[Medic.ID].Alive then
 		for a := 1 to MaxID do
@@ -170,6 +178,8 @@ procedure TaskMedic_Heal(ID: byte; Hp: smallint);
 var
 	j: byte; X, Y, X2, Y2: single;
 begin
+	if Rules_GetRuleValue('role.doc.allow_heal') <> 1 then exit;
+
 	GetPlayerXY(ID, X, Y);
 	for j := 1 to MaxID do
 		if j <> Medic.ID then
@@ -239,6 +249,8 @@ end;
 procedure TaskMedic_RevivePlayer(ID: byte);
 var i: byte; found: boolean;
 begin
+	if Rules_GetRuleValue('role.doc.allow_revive') <> 1 then exit;
+
 	Players.WriteConsole(Players[ID ].Name + ' has been revived!', GREEN);
 	BigText_DrawScreenX(DTL_NOTIFICATION, 0, Players[ID ].Name + ' has been revived!',180,  RGB(100,255,100), 0.1, 20,370);
 	WriteDebug(3,  'player ' + IntToStr(ID ) + ' revived');
@@ -259,6 +271,8 @@ end;
 procedure TaskMedic_TryRevive();
 var i: byte;
 begin
+	if Rules_GetRuleValue('role.doc.allow_revive') <> 1 then exit;
+
 	if Players[Medic.ID].Alive then
 	for i := 1 to MaxID do begin
 		if player[i].Status = 2 then

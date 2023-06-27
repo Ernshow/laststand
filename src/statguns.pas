@@ -16,7 +16,8 @@ uses
 	LSPlayers,
 	MersenneTwister,
 	Misc,
-	Raycasts;
+	Raycasts,
+	Rules;
 
 const
 	BUILDTIME = 	 15;
@@ -202,6 +203,7 @@ end;
 function Statguns_TryBuildX(ID: byte; xoffset: single; errors: boolean): boolean;
 var X, X2, Y: single; sgY: array[0..1] of single; b: boolean; a: byte;
 begin
+	if Rules_GetRuleValue('role.mech.allow_sg') <> 1 then exit;
 	GetPlayerXY(ID, X, sgY[0]);
   X := X + xoffset;
 	RayCast2(0, 2.5, 10, X, sgY[0]);

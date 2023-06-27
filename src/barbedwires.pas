@@ -17,7 +17,8 @@ uses
   MersenneTwister,
 	Misc,
   Raycasts,
-	Damage;
+	Damage,
+	Rules;
 
 const
 	MAX_WIRES = 3;
@@ -53,6 +54,8 @@ implementation
 function Wires_TryPlaceX(owner: byte; xoffset: single; errors: boolean): boolean;
 var i, j, a: byte; x2, Y2: array[0..1] of single; X, Y: single; B: Boolean; z: shortint;
 begin
+	if Rules_GetRuleValue('role.mech.allow_wire') <> 1 then exit;
+
 	for i:=1 to MAX_WIRES do
 		if not wire[i].Active then begin
 			a:=i;
