@@ -87,7 +87,9 @@ uses
 	WeaponMenu,
 	Weapons,
 	BarbedWires,
-	Zombies;
+	Zombies,
+	Rules,
+	Chaos;
 
 const
 	// do not touch \/
